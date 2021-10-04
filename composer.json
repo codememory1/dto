@@ -1,0 +1,19 @@
+{
+    "name": "codememory/dto",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Danil",
+            "email": "kostynd1@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Codememory\\Patterns\\DTO\\": ""
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
