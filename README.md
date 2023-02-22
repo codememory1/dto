@@ -14,7 +14,7 @@ $ composer require codememory/dto
 * How to create your own constraints?
 * What is a collector and how to create your own collector ?
 
-> [ ! ] Please note that in the ResponseControl, all properties that we process must have the access modifier _"public"_
+> [ ! ] Please note that in the DataTransfer, all properties that we process must have the access modifier _"public"_
 
 ### Usage examples
 
@@ -181,7 +181,7 @@ final class TestDto extends DataTransfer
 #### DataTransfer Methods:
   * __getReflectionAdapter__ - Returns the Reflection Adapter
   * __setObject__ - Set the object to be collected, if the object is not set, all processing associated with the object will not run and the DTO will work without the object
-  * getObject - Get the collected object, must be called after the collect method
+  * __getObject__ - Get the collected object, must be called after the collect method
   * __addDataTransferCollection__ - Add collection or array of collections with symfony validator constraints (assert)
     * __$key__ - The key by which you can then get the collection itself with the rules for each property
     * __$dataTransferCollection__ - Expects a Codememory\Dto\DataTransferCollection or an array of Codememory\Dto\DataTransferCollection. This collection is used to validate DTO properties
@@ -265,6 +265,8 @@ echo $testDto->fullName // Code+Memory
 ```
 
 ### Creating Your Own Collector
+
+> Collector - is a DTO collector, it plays a major role in working with each DTO property
 
 ```php
 use Codememory\Dto\Interfaces\CollectorInterface;
