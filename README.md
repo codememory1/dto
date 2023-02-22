@@ -147,12 +147,15 @@ final class TestDto extends DataTransfer
     * __$dataTransferControl__ - API for managing logic
   * __$itemValueConverter (default: null)__ - Method for converting each element of the array, which will be passed as a value for searching in the database
 
+
 * __ToEnumConstraint__ - Translates a value from collect data to an enum object
   * __$byValue (default: false)__ - Search for case in Enum by its value, by default it searches by its name
+
 
 * __ToTypeConstraint__ - Converts a value from collect data to a specific type
   * __$type (default: auto)__ - The name of the PHP type or Interface DateTime. By default works on the type from the property
   * __$onyData (default: false)__ - Force cast to type, only value at collect data level
+
 
 * __ValidationConstraint__ - Add symfony assert constraint to validation queue
   * __$assert__ - Array of validation rules if this property will be processed
@@ -161,39 +164,39 @@ final class TestDto extends DataTransfer
 > This is an API class that comes inside a constraint to manage the state or values of the dto, the object being collected, and the value from collect data
 
 #### Properties:
-  * $property - readonly ReflectionProperty - Current property being processed
-  * $dataTransfer - readonly DataTransferInterface - Current DTO being processed
-  * $data - readonly array - A copy of the data that was passed to collect data
+  * __$property__ - readonly ReflectionProperty - Current property being processed
+  * __$dataTransfer__ - readonly DataTransferInterface - Current DTO being processed
+  * __$data__ - readonly array - A copy of the data that was passed to collect data
 
 
 #### Methods:
-  * setDataTransferValue - Set value for DTO property
-  * setObjectValue - Set a value for the setter of the collected object
-  * setDataValue - Set the value that was passed to collect data
-  * setSetterMethodNameToObject - Set the name of the setter method that will be called on the collected object
-  * setIsIgnoreSetterCall - Set the setter call ignore status of the collected object
-  * setIsSkipProperty - Set skip status of currently processed property in DataTransfer
-  * setDataKey - Set a new value selection key from collect data - does not play a major role, intended for processing subsequent constraints
+  * __setDataTransferValue__ - Set value for DTO property
+  * __setObjectValue__ - Set a value for the setter of the collected object
+  * __setDataValue__ - Set the value that was passed to collect data
+  * __setSetterMethodNameToObject__ - Set the name of the setter method that will be called on the collected object
+  * __setIsIgnoreSetterCall__ - Set the setter call ignore status of the collected object
+  * __setIsSkipProperty__ - Set skip status of currently processed property in DataTransfer
+  * __setDataKey__ - Set a new value selection key from collect data - does not play a major role, intended for processing subsequent constraints
 
 #### DataTransfer Methods:
-  * getReflectionAdapter - Returns the Reflection Adapter
-  * setObject - Set the object to be collected, if the object is not set, all processing associated with the object will not run and the DTO will work without the object
+  * __getReflectionAdapter__ - Returns the Reflection Adapter
+  * __setObject__ - Set the object to be collected, if the object is not set, all processing associated with the object will not run and the DTO will work without the object
   * getObject - Get the collected object, must be called after the collect method
-  * addDataTransferCollection - Add collection or array of collections with symfony validator constraints (assert)
+  * __addDataTransferCollection__ - Add collection or array of collections with symfony validator constraints (assert)
     * __$key__ - The key by which you can then get the collection itself with the rules for each property
     * __$dataTransferCollection__ - Expects a Codememory\Dto\DataTransferCollection or an array of Codememory\Dto\DataTransferCollection. This collection is used to validate DTO properties
-  * getListDataTransferCollection - Returns a list of collections
-  * collect - Collects DTO and object (if one was passed)
+  * __getListDataTransferCollection__ - Returns a list of collections
+  * __collect__ - Collects DTO and object (if one was passed)
 
 ### DataTransferCollection Methods
-  * __construct
-    * $dataTransfer - DTO
-    * $propertyValidation - Validate properties of the DTO that was passed as the first argument. Scheme: [propertyName => [Symfony assert objects]]
-  * getDataTransfer - Return $dataTransfer
-  * getDataTransfer - Return $propertyValidation
-  * addPropertyValidation - Add validation on a specific property
-    * $propertyName - The name of the property to be validated
-    * $constraints - An array of symfony assert objects or a specific symfony assert object
+  * __construct__
+    * __$dataTransfer__ - DTO
+    * __$propertyValidation__ - Validate properties of the DTO that was passed as the first argument. Scheme: [propertyName => [Symfony assert objects]]
+  * __getDataTransfer__ - Return $dataTransfer
+  * __getDataTransfer__ - Return $propertyValidation
+  * __addPropertyValidation__ - Add validation on a specific property
+    * __$propertyName__ - The name of the property to be validated
+    * __$constraints__ - An array of symfony assert objects or a specific symfony assert object
 
 ### Creating your own constraint
 
