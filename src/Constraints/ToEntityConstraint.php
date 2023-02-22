@@ -11,7 +11,6 @@ final class ToEntityConstraint implements ConstraintInterface
     public function __construct(
         public readonly string $byKey,
         public readonly bool $isList = false,
-        public readonly ?string $pathToItemValue = null,
         public readonly bool $uniqueInList = true,
         public readonly bool $checkNotFoundEntity = true,
         public readonly ?string $customHandlerNotFoundEntity = null, /* Method name of DataTransfer */
