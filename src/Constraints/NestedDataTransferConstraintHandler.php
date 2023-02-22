@@ -8,6 +8,7 @@ use Codememory\Dto\Exceptions\DataTransferNotFoundException;
 use Codememory\Dto\Interfaces\ConstraintHandlerInterface;
 use Codememory\Dto\Interfaces\ConstraintInterface;
 use Codememory\Dto\Interfaces\DataTransferInterface;
+use function is_array;
 use RuntimeException;
 
 final class NestedDataTransferConstraintHandler implements ConstraintHandlerInterface
@@ -22,10 +23,7 @@ final class NestedDataTransferConstraintHandler implements ConstraintHandlerInte
         }
 
         if (null !== $constraint->object && !class_exists($constraint->object)) {
-            throw new RuntimeException(sprintf(
-                'Class %s not found. For DataTransfer constraint "NestedDataTransferConstraint"',
-                $constraint->object
-            ));
+            throw new RuntimeException(sprintf('Class %s not found. For DataTransfer constraint "NestedDataTransferConstraint"', $constraint->object));
         }
 
         /** @var DataTransferInterface $dataTransfer */

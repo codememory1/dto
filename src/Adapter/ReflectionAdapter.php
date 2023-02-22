@@ -2,6 +2,7 @@
 
 namespace Codememory\Dto\Adapter;
 
+use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionProperty;
@@ -30,5 +31,16 @@ final class ReflectionAdapter
     public function getProperties(): array
     {
         return $this->reflection->getProperties(ReflectionProperty::IS_PUBLIC);
+    }
+
+    /**
+     * @return array<int, ReflectionAttribute>
+     */
+    public function getPropertyAttributes(ReflectionProperty $property): array
+    {
+        return [
+            ...$this->getClassAttributes(),
+            ...$property->getAttributes()
+        ];
     }
 }

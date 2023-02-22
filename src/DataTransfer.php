@@ -23,6 +23,11 @@ class DataTransfer implements DataTransferInterface
         $this->listDataTransferCollection[static::class] = new DataTransferCollection($this, []);
     }
 
+    public function getReflectionAdapter(): ReflectionAdapter
+    {
+        return $this->reflectionAdapter;
+    }
+
     public function setObject(object $object): DataTransferInterface
     {
         $this->object = $object;

@@ -20,8 +20,11 @@ final class BaseCollector implements CollectorInterface
         $dataTransferControl->setObjectValue($dataTransferControl->getDataTransferValue());
         $dataTransferControl->setIsSkipProperty(false);
         $dataTransferControl->setIsIgnoreSetterCall(false);
+        $dataTransferControl->setDataKey(u($dataTransferControl->property->getName())->snake()->toString());
 
-        foreach ($dataTransferControl->property->getAttributes() as $attribute) {
+        $reflectionAdapter = $dataTransferControl->dataTransfer->getReflectionAdapter();
+
+        foreach ($reflectionAdapter->getPropertyAttributes($dataTransferControl->property) as $attribute) {
             $attributeInstance = $attribute->newInstance();
 
             if ($attributeInstance instanceof ConstraintInterface) {

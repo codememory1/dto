@@ -13,6 +13,7 @@ final class DataTransferControl
     private ?string $setterMethodNameToObject = null;
     private bool $ignoreSetterCall = false;
     private bool $skipProperty = false;
+    private ?string $dataKey = null;
 
     public function __construct(
         public readonly DataTransferInterface $dataTransfer,
@@ -57,6 +58,14 @@ final class DataTransferControl
         return $this;
     }
 
+    public function setValue(mixed $value): self
+    {
+        $this->setDataTransferValue($value);
+        $this->setObjectValue($value);
+
+        return $this;
+    }
+
     public function getSetterMethodNameToObject(): ?string
     {
         return $this->setterMethodNameToObject;
@@ -89,6 +98,18 @@ final class DataTransferControl
     public function setIsSkipProperty(bool $is): self
     {
         $this->skipProperty = $is;
+
+        return $this;
+    }
+
+    public function getDataKey(): ?string
+    {
+        return $this->dataKey;
+    }
+
+    public function setDataKey(string $key): self
+    {
+        $this->dataKey = $key;
 
         return $this;
     }

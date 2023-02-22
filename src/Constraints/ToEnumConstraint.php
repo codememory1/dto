@@ -6,16 +6,15 @@ use Attribute;
 use Codememory\Dto\Interfaces\ConstraintInterface;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class NestedDataTransferConstraint implements ConstraintInterface
+final class ToEnumConstraint implements ConstraintInterface
 {
     public function __construct(
-        public readonly string $dataTransfer,
-        public readonly ?string $object = null
+        public readonly bool $byValue = false
     ) {
     }
 
     public function getHandler(): string
     {
-        return NestedDataTransferConstraintHandler::class;
+        return ToEnumConstraintHandler::class;
     }
 }

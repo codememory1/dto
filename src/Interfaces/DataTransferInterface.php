@@ -2,10 +2,13 @@
 
 namespace Codememory\Dto\Interfaces;
 
+use Codememory\Dto\Adapter\ReflectionAdapter;
 use Codememory\Dto\DataTransferCollection;
 
 interface DataTransferInterface
 {
+    public function getReflectionAdapter(): ReflectionAdapter;
+
     public function setObject(object $object): self;
 
     public function getObject(): ?object;

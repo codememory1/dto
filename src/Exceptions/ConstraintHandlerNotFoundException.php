@@ -9,6 +9,6 @@ final class ConstraintHandlerNotFoundException extends RuntimeException
 {
     public function __construct(string $namespace, int $code = 0, ?Throwable $previous = null)
     {
-        parent::__construct("Constraint handler $namespace not found", $code, $previous);
+        parent::__construct("Constraint handler {$namespace} not found", $code, $previous);
     }
 }
