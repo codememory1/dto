@@ -1,0 +1,31 @@
+{
+    "name": "codememory/dto",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Codememory\\Dto\\": "src/"
+        },
+        "files": ["src/register.php"]
+    },
+    "authors": [
+        {
+            "name": "Codememory",
+            "email": "kostynd1@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.1",
+        "doctrine/orm": "2.11",
+        "symfony/event-dispatcher": "6.1",
+        "symfony/http-foundation": "6.1",
+        "symfony/string": "6.1",
+        "symfony/validator": "^6.1"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "require-dev": {
+        "symfony/var-dumper": "^6.1"
+    }
+}
