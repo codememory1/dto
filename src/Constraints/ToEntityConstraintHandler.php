@@ -21,7 +21,7 @@ final class ToEntityConstraintHandler implements ConstraintHandlerInterface
      */
     public function handle(ConstraintInterface $constraint, DataTransferControl $dataTransferControl): void
     {
-        $repository = $this->em->getRepository($dataTransferControl->property->getType()->getName());
+        $repository = $this->em->getRepository($constraint->entity ?: $dataTransferControl->property->getType()->getName());
 
         if (!$constraint->isList) {
             $entity = $repository->findOneBy([$constraint->byKey => $dataTransferControl->getDataValue()]);
