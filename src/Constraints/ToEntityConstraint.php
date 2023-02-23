@@ -14,7 +14,8 @@ final class ToEntityConstraint implements ConstraintInterface
         public readonly bool $uniqueInList = true,
         public readonly bool $checkNotFoundEntity = true,
         public readonly ?string $customHandlerNotFoundEntity = null, /* Method name of DataTransfer */
-        public readonly ?string $itemValueConverter = null           /* Method name of DataTransfer */
+        public readonly ?string $itemValueConverter = null,          /* Method name of DataTransfer */
+        public readonly ?string $entity = null
     ) {
     }
 
