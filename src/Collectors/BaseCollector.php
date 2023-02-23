@@ -48,7 +48,7 @@ final class BaseCollector implements CollectorInterface
 
     private function getValueFromData(array $data, ReflectionProperty $property): mixed
     {
-        return $data[u($property->getName())->camel()->toString()] ?? null;
+        return $data[u($property->getName())->snake()->toString()] ?? null;
     }
 
     private function getSetterMethodName(ReflectionProperty $property): string
