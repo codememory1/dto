@@ -16,7 +16,6 @@
     "require": {
         "php": ">=8.1",
         "doctrine/orm": "^2.14",
-        "symfony/event-dispatcher": "6.1",
         "symfony/http-foundation": "6.1",
         "symfony/string": "6.1",
         "symfony/validator": "^6.1"
