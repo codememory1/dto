@@ -9,6 +9,9 @@ use Codememory\Dto\Validator\Constraints\Collection;
 use function is_array;
 use LogicException;
 
+/**
+ * @template Entity as mixed
+ */
 #[Collection('getListDataTransferCollection')]
 class DataTransfer implements DataTransferInterface
 {
@@ -35,6 +38,9 @@ class DataTransfer implements DataTransferInterface
         return $this;
     }
 
+    /**
+     * @return null|Entity
+     */
     public function getObject(): ?object
     {
         return $this->object;

@@ -8,3 +8,4 @@ ConstraintHandlerRegister::register(new Constraints\NestedDataTransferConstraint
 ConstraintHandlerRegister::register(new Constraints\ToEnumConstraintHandler());
 ConstraintHandlerRegister::register(new Constraints\ToTypeConstraintHandler());
 ConstraintHandlerRegister::register(new Constraints\ValidationConstraintHandler());
+ConstraintHandlerRegister::register(new Constraints\CallbackConstraintHandler());

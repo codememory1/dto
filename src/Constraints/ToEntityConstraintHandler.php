@@ -43,7 +43,7 @@ final class ToEntityConstraintHandler implements ConstraintHandlerInterface
     {
         $values = $constraint->uniqueInList ? array_unique($dataTransferControl->getDataValue()) : $dataTransferControl->getDataValue();
 
-        foreach ($values as $value) {
+        foreach ($values as &$value) {
             if (null !== $constraint->itemValueConverter) {
                 $value = $dataTransferControl->dataTransfer->{$constraint->itemValueConverter}($value);
             }
@@ -53,9 +53,11 @@ final class ToEntityConstraintHandler implements ConstraintHandlerInterface
             if (null === $entity) {
                 $this->notFoundEntityHandler($constraint, $dataTransferControl, $value);
             } else {
-                $dataTransferControl->setValue($entity);
+                $value = $entity;
             }
         }
+
+        $dataTransferControl->setValue($values);
     }
 
     /**
@@ -67,7 +69,7 @@ final class ToEntityConstraintHandler implements ConstraintHandlerInterface
             if (null === $constraint->customHandlerNotFoundEntity) {
                 throw new LogicException(sprintf('Entity %s by key %s with value %s not found', $dataTransferControl->property->getType()->getName(), $constraint->byKey, $value));
             }
-            $dataTransferControl->dataTransfer->{$constraint->checkNotFoundEntity}($value, $dataTransferControl);
+            $dataTransferControl->dataTransfer->{$constraint->customHandlerNotFoundEntity}($value, $dataTransferControl);
         }
     }
 }
