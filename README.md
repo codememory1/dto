@@ -138,14 +138,29 @@ final class TestDto extends DataTransfer
 
 
 * __ToEntityConstraint__ - Translate value from collect data to doctrine entity (Requires registration)
+  * __$entity__ - Entity namespace, by default will be determined by property type
   * __$byKey__ - The key by which to search for a record in the database
-  * __$isList (default: false)__ - Searching for multiple entities in an array, it is recommended that before calling this constraint, call constraint ToTypeConstraint with array type and with parameter onlyData = true
-  * __$uniqueInList (default: true)__ - The value from collect data will be passed through the array_unique function
-  * __$checkNotFoundEntity (default: true)__ - Whether to perform a check if the entity is not found, if the entity is not found, an exception will be thrown
-  * __$customHandlerNotFoundEntity (default: null)__ - Own handler, if the entity is not found, you need to specify the method name from DataTransfer
+  * __$whereCallback__ - The name of the method from DataTransfer that should return the array where
+      * __$value__ - Value from collect data
+      * __$dataTransferControl__ - API for managing logic
+  * __$entityNotFoundCallback (default: null)__ - Own handler, if the entity is not found, you need to specify the method name from DataTransfer
     * __$value__ - Value from collect data
     * __$dataTransferControl__ - API for managing logic
-  * __$itemValueConverter (default: null)__ - Method for converting each element of the array, which will be passed as a value for searching in the database
+
+
+* __ToEntityListConstraint__ - Convert array of values to array of entities
+    * __$entity__ - Entity namespace, by default will be determined by property type
+    * __$byKey__ - The key by which to search for a record in the database
+    * __$whereCallback__ - The name of the method from DataTransfer that should return the array where
+        * __$value__ - Value from collect data
+        * __$dataTransferControl__ - API for managing logic
+    * __$unique (default: true)__ - Whether to pass input array through array_unique function
+    * __$entityNotFoundCallback (default: null)__ - Own handler, if the entity is not found, you need to specify the method name from DataTransfer
+        * __$value__ - Value from collect data
+        * __$dataTransferControl__ - API for managing logic
+    * __$valueConverterCallback (default: null)__ - The name of the method to convert the value of each iteration of the input array. The method must return a value
+        * __$value__ - The value of each iteration
+        * __$dataTransferControl__ - API for managing logic
 
 
 * __ToEnumConstraint__ - Translates a value from collect data to an enum object
