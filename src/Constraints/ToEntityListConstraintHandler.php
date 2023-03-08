@@ -34,6 +34,8 @@ final class ToEntityListConstraintHandler implements ConstraintHandlerInterface
 
             if (null !== $constraint->entityNotFoundCallback && null === $entity) {
                 $dataTransfer->{$constraint->entityNotFoundCallback}($value, $dataTransferControl);
+            } else {
+                $value = $entity;
             }
         }
 
