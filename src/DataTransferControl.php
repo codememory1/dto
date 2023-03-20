@@ -3,7 +3,7 @@
 namespace Codememory\Dto;
 
 use Codememory\Dto\Interfaces\DataTransferInterface;
-use ReflectionProperty;
+use Codememory\Reflection\Reflectors\PropertyReflector;
 
 final class DataTransferControl
 {
@@ -17,7 +17,7 @@ final class DataTransferControl
 
     public function __construct(
         public readonly DataTransferInterface $dataTransfer,
-        public readonly ReflectionProperty $property,
+        public readonly PropertyReflector $property,
         public readonly array $data
     ) {
     }

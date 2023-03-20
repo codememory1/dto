@@ -41,7 +41,7 @@ final class ToEntityConstraintHandler implements ConstraintHandlerInterface
      */
     private function listHandler(ConstraintInterface $constraint, DataTransferControl $dataTransferControl, ObjectRepository $repository): void
     {
-        $values = array_map(static function (mixed $value) use ($constraint, $dataTransferControl) {
+        $values = array_map(static function(mixed $value) use ($constraint, $dataTransferControl) {
             if (null !== $constraint->itemValueConverter) {
                 return $dataTransferControl->dataTransfer->{$constraint->itemValueConverter}($value);
             }

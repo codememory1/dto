@@ -2,12 +2,15 @@
 
 namespace Codememory\Dto;
 
-use Codememory\Dto\Adapter\ReflectionAdapter;
 use Codememory\Dto\Interfaces\CollectorInterface;
 use Codememory\Dto\Interfaces\DataTransferInterface;
 use Codememory\Dto\Validator\Constraints\Collection;
+use Codememory\Reflection\ReflectorManager;
+use Codememory\Reflection\Reflectors\ClassReflector;
 use function is_array;
 use LogicException;
+use Psr\Cache\InvalidArgumentException;
+use ReflectionException;
 
 /**
  * @template Entity as mixed
@@ -15,20 +18,30 @@ use LogicException;
 #[Collection('getListDataTransferCollection')]
 class DataTransfer implements DataTransferInterface
 {
-    protected readonly ReflectionAdapter $reflectionAdapter;
+    protected readonly ClassReflector $reflector;
     protected array $listDataTransferCollection = [];
     protected ?object $object = null;
 
+    /**
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
     public function __construct(
-        protected readonly CollectorInterface $collector
+        protected readonly CollectorInterface $collector,
+        protected readonly ReflectorManager $reflectorManager,
     ) {
-        $this->reflectionAdapter = new ReflectionAdapter(static::class);
+        $this->reflector = $reflectorManager->getReflector(static::class);
         $this->listDataTransferCollection[static::class] = new DataTransferCollection($this, []);
     }
 
-    public function getReflectionAdapter(): ReflectionAdapter
+    public function getReflectorManager(): ReflectorManager
     {
-        return $this->reflectionAdapter;
+        return $this->reflectorManager;
+    }
+
+    public function getReflector(): ClassReflector
+    {
+        return $this->reflector;
     }
 
     public function setObject(object $object): DataTransferInterface
@@ -70,7 +83,7 @@ class DataTransfer implements DataTransferInterface
 
     public function collect(array $data): DataTransferInterface
     {
-        foreach ($this->reflectionAdapter->getProperties() as $property) {
+        foreach ($this->reflector->getPublicProperties() as $property) {
             $dataTransferControl = new DataTransferControl($this, $property, $data);
 
             $this->collector->collect($dataTransferControl);
