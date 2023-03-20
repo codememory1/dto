@@ -24,8 +24,9 @@ final class ToTypeConstraintHandler implements ConstraintHandlerInterface
         $this->constraint = $constraint;
 
         $value = $dataTransferControl->getDataValue();
+        $trimValue = is_string($value) ? trim($value) : $value;
 
-        if ($dataTransferControl->property->getType()->allowNullable() && empty($value)) {
+        if ($dataTransferControl->property->getType()->allowNullable() && (null === $value || '' === $trimValue)) {
             $this->setValue($dataTransferControl, $constraint, null);
         } else if ($this->isType($dataTransferControl->property, 'array')) {
             $this->setValue($dataTransferControl, $constraint, $this->toArray($value));
