@@ -5,13 +5,12 @@ namespace Codememory\Dto\Constraints;
 use Codememory\Dto\DataTransferControl;
 use Codememory\Dto\Interfaces\ConstraintHandlerInterface;
 use Codememory\Dto\Interfaces\ConstraintInterface;
+use Codememory\Reflection\Reflectors\PropertyReflector;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Exception;
 use function is_array;
-use JetBrains\PhpStorm\Pure;
 use const JSON_ERROR_NONE;
-use ReflectionProperty;
 
 final class ToTypeConstraintHandler implements ConstraintHandlerInterface
 {
@@ -27,7 +26,7 @@ final class ToTypeConstraintHandler implements ConstraintHandlerInterface
         $value = $dataTransferControl->getDataValue();
         $trimValue = is_string($value) ? trim($value) : $value;
 
-        if ($dataTransferControl->property->getType()->allowsNull() && (null === $value || '' === $trimValue)) {
+        if ($dataTransferControl->property->getType()->allowNullable() && (null === $value || '' === $trimValue)) {
             $this->setValue($dataTransferControl, $constraint, null);
         } else if ($this->isType($dataTransferControl->property, 'array')) {
             $this->setValue($dataTransferControl, $constraint, $this->toArray($value));
@@ -58,8 +57,7 @@ final class ToTypeConstraintHandler implements ConstraintHandlerInterface
         }
     }
 
-    #[Pure]
-    private function isType(ReflectionProperty $property, string $type): bool
+    private function isType(PropertyReflector $property, string $type): bool
     {
         return $type === $this->constraint->type || $type === $property->getType()->getName();
     }

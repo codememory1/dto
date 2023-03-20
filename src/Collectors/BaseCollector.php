@@ -7,7 +7,8 @@ use Codememory\Dto\Exceptions\ConstraintHandlerNotFoundException;
 use Codememory\Dto\Interfaces\CollectorInterface;
 use Codememory\Dto\Interfaces\ConstraintInterface;
 use Codememory\Dto\Registers\ConstraintHandlerRegister;
-use ReflectionProperty;
+use Codememory\Reflection\Reflectors\AttributeReflector;
+use Codememory\Reflection\Reflectors\PropertyReflector;
 use function Symfony\Component\String\u;
 
 final class BaseCollector implements CollectorInterface
@@ -22,10 +23,14 @@ final class BaseCollector implements CollectorInterface
         $dataTransferControl->setIsIgnoreSetterCall(false);
         $dataTransferControl->setDataKey(u($dataTransferControl->property->getName())->snake()->toString());
 
-        $reflectionAdapter = $dataTransferControl->dataTransfer->getReflectionAdapter();
+        /** @var AttributeReflector[] $attributes */
+        $attributes = [
+            ...$dataTransferControl->dataTransfer->getReflector()->getAttributes(),
+            ...$dataTransferControl->property?->getAttributes() ?: []
+        ];
 
-        foreach ($reflectionAdapter->getPropertyAttributes($dataTransferControl->property) as $attribute) {
-            $attributeInstance = $attribute->newInstance();
+        foreach ($attributes as $attribute) {
+            $attributeInstance = $attribute->getInstance();
 
             if ($attributeInstance instanceof ConstraintInterface) {
                 $this->constraintHandler($attributeInstance, $dataTransferControl);
@@ -46,12 +51,12 @@ final class BaseCollector implements CollectorInterface
         ConstraintHandlerRegister::getHandler($constraint->getHandler())->handle($constraint, $dataTransferControl);
     }
 
-    private function getValueFromData(array $data, ReflectionProperty $property): mixed
+    private function getValueFromData(array $data, PropertyReflector $property): mixed
     {
         return $data[u($property->getName())->snake()->toString()] ?? null;
     }
 
-    private function getSetterMethodName(ReflectionProperty $property): string
+    private function getSetterMethodName(PropertyReflector $property): string
     {
         return u(sprintf('set_%s', $property->getName()))->camel()->toString();
     }

@@ -27,7 +27,7 @@ final class NestedDataTransferConstraintHandler implements ConstraintHandlerInte
         }
 
         /** @var DataTransferInterface $dataTransfer */
-        $dataTransfer = new ($constraint->dataTransfer)(new BaseCollector());
+        $dataTransfer = new ($constraint->dataTransfer)(new BaseCollector(), $dataTransferControl->dataTransfer->getReflectorManager());
 
         if (null !== $constraint->object) {
             $dataTransfer->setObject(new ($constraint->object)());
