@@ -10,6 +10,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Exception;
 use function is_array;
+use function is_string;
 use const JSON_ERROR_NONE;
 
 final class ToTypeConstraintHandler implements ConstraintHandlerInterface
