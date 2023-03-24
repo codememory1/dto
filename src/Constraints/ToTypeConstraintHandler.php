@@ -9,6 +9,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Exception;
 use function is_array;
+use function is_string;
 use JetBrains\PhpStorm\Pure;
 use const JSON_ERROR_NONE;
 use ReflectionProperty;

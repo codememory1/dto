@@ -26,8 +26,7 @@ final class ToEntityConstraintHandler implements ConstraintHandlerInterface
         if (null === $constraint->whereCallback) {
             $entity = $repository->findOneBy([$constraint->byKey => $dataValue]);
         } else {
-            $where = $dataTransfer->{$constraint->whereCallback}($dataValue, $dataTransferControl);
-            $entity = $repository->findOneBy($where);
+            $entity = $dataTransfer->{$constraint->whereCallback}($dataValue, $repository, $dataTransferControl);
         }
 
         if (null !== $constraint->entityNotFoundCallback && null === $entity) {
