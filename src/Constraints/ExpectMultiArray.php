@@ -6,15 +6,16 @@ use Attribute;
 use Codememory\Dto\Interfaces\ConstraintInterface;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class ToEnumConstraint implements ConstraintInterface
+final class ExpectMultiArray implements ConstraintInterface
 {
     public function __construct(
-        public readonly bool $byValue = false
+        public readonly array $expectKeys,
+        public readonly bool $itemKeyAsNumber = true
     ) {
     }
 
     public function getHandler(): string
     {
-        return ToEnumConstraintHandler::class;
+        return ExpectMultiArrayHandler::class;
     }
 }

@@ -6,7 +6,7 @@ use Attribute;
 use Codememory\Dto\Interfaces\ConstraintInterface;
 
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY)]
-final class ToTypeConstraint implements ConstraintInterface
+final class ToType implements ConstraintInterface
 {
     public function __construct(
         public readonly ?string $type = null,
@@ -16,6 +16,6 @@ final class ToTypeConstraint implements ConstraintInterface
 
     public function getHandler(): string
     {
-        return ToTypeConstraintHandler::class;
+        return ToTypeHandler::class;
     }
 }

@@ -7,10 +7,10 @@ use Codememory\Dto\DataTransferControl;
 use Codememory\Dto\Interfaces\ConstraintHandlerInterface;
 use Codememory\Dto\Interfaces\ConstraintInterface;
 
-final class ValidationConstraintHandler implements ConstraintHandlerInterface
+final class ValidationHandler implements ConstraintHandlerInterface
 {
     /**
-     * @param ValidationConstraint $constraint
+     * @param Validation $constraint
      */
     public function handle(ConstraintInterface $constraint, DataTransferControl $dataTransferControl): void
     {
