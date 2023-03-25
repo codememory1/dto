@@ -8,10 +8,10 @@ use Codememory\Dto\Interfaces\ConstraintInterface;
 use function constant;
 use function defined;
 
-final class ToEnumConstraintHandler implements ConstraintHandlerInterface
+final class ToEnumHandler implements ConstraintHandlerInterface
 {
     /**
-     * @param ToEnumConstraint $constraint
+     * @param ToEnum $constraint
      */
     public function handle(ConstraintInterface $constraint, DataTransferControl $dataTransferControl): void
     {

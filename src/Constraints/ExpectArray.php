@@ -6,15 +6,15 @@ use Attribute;
 use Codememory\Dto\Interfaces\ConstraintInterface;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class CallbackConstraint implements ConstraintInterface
+final class ExpectArray implements ConstraintInterface
 {
     public function __construct(
-        public readonly string $methodName
+        public readonly array $expectKeys
     ) {
     }
 
     public function getHandler(): string
     {
-        return CallbackConstraintHandler::class;
+        return ExpectArrayHandler::class;
     }
 }

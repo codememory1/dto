@@ -7,7 +7,7 @@ use Codememory\Dto\Interfaces\ConstraintHandlerInterface;
 use Codememory\Dto\Interfaces\ConstraintInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
-final class ToEntityConstraintHandler implements ConstraintHandlerInterface
+final class ToEntityHandler implements ConstraintHandlerInterface
 {
     public function __construct(
         private readonly EntityManagerInterface $em
@@ -15,7 +15,7 @@ final class ToEntityConstraintHandler implements ConstraintHandlerInterface
     }
 
     /**
-     * @param ToEntityConstraint $constraint
+     * @param ToEntity $constraint
      */
     public function handle(ConstraintInterface $constraint, DataTransferControl $dataTransferControl): void
     {

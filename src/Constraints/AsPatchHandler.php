@@ -8,7 +8,7 @@ use Codememory\Dto\Interfaces\ConstraintHandlerInterface;
 use Codememory\Dto\Interfaces\ConstraintInterface;
 use Symfony\Component\HttpFoundation\Request;
 
-final class AsPatchConstraintHandler implements ConstraintHandlerInterface
+final class AsPatchHandler implements ConstraintHandlerInterface
 {
     public function __construct(
         private readonly Request $request
@@ -16,7 +16,7 @@ final class AsPatchConstraintHandler implements ConstraintHandlerInterface
     }
 
     /**
-     * @param AsPatchConstraint $constraint
+     * @param AsPatch $constraint
      */
     public function handle(ConstraintInterface $constraint, DataTransferControl $dataTransferControl): void
     {

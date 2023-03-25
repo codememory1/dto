@@ -13,12 +13,12 @@ use function is_array;
 use function is_string;
 use const JSON_ERROR_NONE;
 
-final class ToTypeConstraintHandler implements ConstraintHandlerInterface
+final class ToTypeHandler implements ConstraintHandlerInterface
 {
-    private ?ToTypeConstraint $constraint = null;
+    private ?ToType $constraint = null;
 
     /**
-     * @param ToTypeConstraint $constraint
+     * @param ToType $constraint
      */
     public function handle(ConstraintInterface $constraint, DataTransferControl $dataTransferControl): void
     {
@@ -47,7 +47,7 @@ final class ToTypeConstraintHandler implements ConstraintHandlerInterface
     }
 
     /**
-     * @param ToTypeConstraint $constraint
+     * @param ToType $constraint
      */
     private function setValue(DataTransferControl $dataTransferControl, ConstraintInterface $constraint, mixed $value): void
     {
@@ -65,13 +65,17 @@ final class ToTypeConstraintHandler implements ConstraintHandlerInterface
 
     private function toArray(mixed $value): array
     {
-        if (true === is_array($value)) {
+        if (is_array($value)) {
             return $value;
+        }
+
+        if (null === $value) {
+            return [];
         }
 
         $value = json_decode($value, true);
 
-        if (true === empty($value) || JSON_ERROR_NONE !== json_last_error()) {
+        if (empty($value) || JSON_ERROR_NONE !== json_last_error()) {
             return [];
         }
 

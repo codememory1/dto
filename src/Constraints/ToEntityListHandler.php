@@ -7,7 +7,7 @@ use Codememory\Dto\Interfaces\ConstraintHandlerInterface;
 use Codememory\Dto\Interfaces\ConstraintInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
-final class ToEntityListConstraintHandler implements ConstraintHandlerInterface
+final class ToEntityListHandler implements ConstraintHandlerInterface
 {
     public function __construct(
         private readonly EntityManagerInterface $em
@@ -15,7 +15,7 @@ final class ToEntityListConstraintHandler implements ConstraintHandlerInterface
     }
 
     /**
-     * @param ToEntityListConstraint $constraint
+     * @param ToEntityList $constraint
      */
     public function handle(ConstraintInterface $constraint, DataTransferControl $dataTransferControl): void
     {
@@ -42,7 +42,7 @@ final class ToEntityListConstraintHandler implements ConstraintHandlerInterface
     }
 
     /**
-     * @param ToEntityListConstraint $constraint
+     * @param ToEntityList $constraint
      */
     private function convertIterationValue(ConstraintInterface $constraint, DataTransferControl $dataTransferControl): array
     {

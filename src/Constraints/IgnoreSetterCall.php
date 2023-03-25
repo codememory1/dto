@@ -6,15 +6,10 @@ use Attribute;
 use Codememory\Dto\Interfaces\ConstraintInterface;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class AsPatchConstraint implements ConstraintInterface
+final class IgnoreSetterCall implements ConstraintInterface
 {
-    public function __construct(
-        public readonly array $assert = []
-    ) {
-    }
-
     public function getHandler(): string
     {
-        return AsPatchConstraintHandler::class;
+        return IgnoreSetterCallHandler::class;
     }
 }

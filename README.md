@@ -31,14 +31,14 @@ enum StatusEnum
     case NOT_ACTIVATED;
 }
 
-#[DtoConstraints\ToTypeConstraint]
+#[DtoConstraints\ToType]
 final class UserDto extends DataTransfer
 {
     public ?string $name = null;
     public ?string $surname = null;
     public ?int $age = null;
     
-    #[DtoConstraints\ToEnumConstraint]
+    #[DtoConstraints\ToEnum]
     public ?StatusEnum $status = null;
 }
 
@@ -102,7 +102,7 @@ foreach ($errors as $error) {
 use Codememory\Dto\Constraints as DtoConstraints
 
 // Constraint for class
-#[DtoConstraints\ToTypeConstraint] // This constraint will cast all DTO properties to the type specified by the property
+#[DtoConstraints\ToType] // This constraint will cast all DTO properties to the type specified by the property
 final class OneDto extends DataTransfer 
 {
     public ?int $number = null;
@@ -112,32 +112,32 @@ final class OneDto extends DataTransfer
 // Constrains for properties
 final class TestDto extends DataTransfer 
 {
-    #[DtoConstraints\NestedDataTransferConstraint(OneDto::class)]
+    #[DtoConstraints\NestedDTO(OneDto::class)]
     public ?OneDto $one = null;
     
    
     // Multiple constraints
     // Priority works here, first ToEnumConstraint will be executed, and then IgnoreSetterCallConstraint
-    #[DtoConstraints\ToEnumConstraint]
-    #[DtoConstraints\IgnoreSetterCallConstraint]
+    #[DtoConstraints\ToEnum]
+    #[DtoConstraints\IgnoreSetterCall]
     public ?StatusEnum $status = null;
 }
 ```
 
 ### List of constraints
-* __AsPatchConstraint__ - Calls a setter on the object being collected and invokes the following constraints on the given property, only if the request method is PATCH and a property key is passed to collect
+* __AsPatch__ - Calls a setter on the object being collected and invokes the following constraints on the given property, only if the request method is PATCH and a property key is passed to collect
   * __$assert (default: [])__ - Array of validation rules if this property will be processed
 
 
-* __IgnoreSetterCallConstraint__ - Ignore the setter call on the collected object
+* __IgnoreSetterCall__ - Ignore the setter call on the collected object
 
 
-* __NestedDataTransferConstraint__ - Nested DataTransfer, nest in DataTransfer property
+* __NestedDataTransfer__ - Nested DataTransfer, nest in DataTransfer property
     * __$dataTransfer__ - DataTransfer namespace
     * __$object (default: null)__ - The namespace of the object to be collected. If the value is not passed, the property on which this constraint is attached will ignore the setter call on the collected object
 
 
-* __ToEntityConstraint__ - Translate value from collect data to doctrine entity (Requires registration)
+* __ToEntity__ - Translate value from collect data to doctrine entity (Requires registration)
   * __$entity__ - Entity namespace, by default will be determined by property type
   * __$byKey__ - The key by which to search for a record in the database
   * __$whereCallback__ - The name of the method from DataTransfer that should return the array where
@@ -148,7 +148,7 @@ final class TestDto extends DataTransfer
     * __$dataTransferControl__ - API for managing logic
 
 
-* __ToEntityListConstraint__ - Convert array of values to array of entities
+* __ToEntityList__ - Convert array of values to array of entities
     * __$entity__ - Entity namespace, by default will be determined by property type
     * __$byKey__ - The key by which to search for a record in the database
     * __$whereCallback__ - The name of the method from DataTransfer that should return the array where
@@ -163,17 +163,29 @@ final class TestDto extends DataTransfer
         * __$dataTransferControl__ - API for managing logic
 
 
-* __ToEnumConstraint__ - Translates a value from collect data to an enum object
+* __ToEnum__ - Translates a value from collect data to an enum object
   * __$byValue (default: false)__ - Search for case in Enum by its value, by default it searches by its name
 
 
-* __ToTypeConstraint__ - Converts a value from collect data to a specific type
+* __ToType__ - Converts a value from collect data to a specific type
   * __$type (default: auto)__ - The name of the PHP type or Interface DateTime. By default works on the type from the property
   * __$onyData (default: false)__ - Force cast to type, only value at collect data level
 
 
-* __ValidationConstraint__ - Add symfony assert constraint to validation queue
+* __Validation__ - Add symfony assert constraint to validation queue
   * __$assert__ - Array of validation rules if this property will be processed
+
+
+* __XSS__ - Encodes input strings or strings in an array
+
+
+* __ExpectArray__ - Expects a normal array
+  * __$expectKeys__ - Array of pending keys, the rest will be removed  
+
+
+* __ExpectMultiArray__ - Expects a normal array
+    * __$expectKeys__ - Array of pending keys, the rest will be removed
+    * __$itemKeyAsNumber (default: true)__ - Converts all item keys to numeric order
 
 ### Parsing DataTransferControl
 > This is an API class that comes inside a constraint to manage the state or values of the dto, the object being collected, and the value from collect data

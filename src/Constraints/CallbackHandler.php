@@ -6,10 +6,10 @@ use Codememory\Dto\DataTransferControl;
 use Codememory\Dto\Interfaces\ConstraintHandlerInterface;
 use Codememory\Dto\Interfaces\ConstraintInterface;
 
-final class CallbackConstraintHandler implements ConstraintHandlerInterface
+final class CallbackHandler implements ConstraintHandlerInterface
 {
     /**
-     * @param CallbackConstraint $constraint
+     * @param callable $constraint
      */
     public function handle(ConstraintInterface $constraint, DataTransferControl $dataTransferControl): void
     {

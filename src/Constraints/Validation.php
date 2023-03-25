@@ -6,16 +6,15 @@ use Attribute;
 use Codememory\Dto\Interfaces\ConstraintInterface;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class NestedDataTransferConstraint implements ConstraintInterface
+final class Validation implements ConstraintInterface
 {
     public function __construct(
-        public readonly string $dataTransfer,
-        public readonly ?string $object = null
+        public readonly array $assert
     ) {
     }
 
     public function getHandler(): string
     {
-        return NestedDataTransferConstraintHandler::class;
+        return ValidationHandler::class;
     }
 }

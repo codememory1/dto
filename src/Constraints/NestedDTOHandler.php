@@ -11,10 +11,10 @@ use Codememory\Dto\Interfaces\DataTransferInterface;
 use function is_array;
 use RuntimeException;
 
-final class NestedDataTransferConstraintHandler implements ConstraintHandlerInterface
+final class NestedDTOHandler implements ConstraintHandlerInterface
 {
     /**
-     * @param NestedDataTransferConstraint $constraint
+     * @param NestedDTO $constraint
      */
     public function handle(ConstraintInterface $constraint, DataTransferControl $dataTransferControl): void
     {
