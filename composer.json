@@ -16,7 +16,7 @@
     "require": {
         "php": ">=8.1",
         "codememory/reflection": "^1.2.1",
-        "doctrine/orm": "^2.14",
+        "doctrine/orm": "^2.11",
         "symfony/http-foundation": "6.1.*",
         "symfony/string": "6.1.*",
         "symfony/validator": "6.1.*"
