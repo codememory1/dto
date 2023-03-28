@@ -176,7 +176,7 @@ final class TestDto extends DataTransfer
   * __$assert__ - Array of validation rules if this property will be processed
 
 
-* __XSS__ - Encodes input strings or strings in an array
+* __XSS__ - Protecting input strings or strings in an array from XSS attack
 
 
 * __ExpectArray__ - Expects a normal array
