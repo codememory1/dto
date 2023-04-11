@@ -4,8 +4,7 @@
     "autoload": {
         "psr-4": {
             "Codememory\\Dto\\": "src/"
-        },
-        "files": ["src/register.php"]
+        }
     },
     "authors": [
         {

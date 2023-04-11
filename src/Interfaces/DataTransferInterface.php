@@ -3,6 +3,7 @@
 namespace Codememory\Dto\Interfaces;
 
 use Codememory\Dto\DataTransferCollection;
+use Codememory\Dto\Registers\ConstraintHandlerRegister;
 use Codememory\Reflection\ReflectorManager;
 use Codememory\Reflection\Reflectors\ClassReflector;
 
@@ -11,6 +12,8 @@ interface DataTransferInterface
     public function getReflectorManager(): ReflectorManager;
 
     public function getReflector(): ClassReflector;
+
+    public function getConstraintHandlerRegister(): ConstraintHandlerRegister;
 
     public function setObject(object $object): self;
 

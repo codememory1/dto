@@ -24,6 +24,9 @@ $ composer require codememory/dto
 use Codememory\Dto\DataTransfer;
 use Codememory\Dto\Collectors\BaseCollector;
 use Codememory\Dto\Constraints as DtoConstraints;
+use Codememory\Dto\Registers\ConstraintHandlerRegister;
+use Codememory\Reflection\ReflectorManager;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 enum StatusEnum
 {
@@ -42,7 +45,11 @@ final class UserDto extends DataTransfer
     public ?StatusEnum $status = null;
 }
 
-$userDto = new UserDto(new BaseCollector());
+$userDto = new UserDto(
+    new BaseCollector(), 
+    new ReflectorManager(new FilesystemAdapter('dto', '/var/cache/codememory')), 
+    new ConstraintHandlerRegister()
+);
 
 // We start the assembly of DTO based on the transferred data
 $userDto->collect([
@@ -65,6 +72,9 @@ $userDto->collect([
 ```php
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Constraints as Assert;
+use Codememory\Dto\Registers\ConstraintHandlerRegister;
+use Codememory\Reflection\ReflectorManager;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 final ProductDto extends DataTransfer
 {
@@ -76,7 +86,11 @@ final ProductDto extends DataTransfer
 }
 
 
-$productDto = new ProductDto(new BaseCollector());
+$productDto = new ProductDto(
+    new BaseCollector(),
+    new ReflectorManager(new FilesystemAdapter('dto', '/var/cache/codememory')),
+    new ConstraintHandlerRegister()
+);
 
 $productDto->collect(['name' => 'Super name']);
 
@@ -206,7 +220,9 @@ final class TestDto extends DataTransfer
   * __setDataKey__ - Set a new value selection key from collect data - does not play a major role, intended for processing subsequent constraints
 
 #### DataTransfer Methods:
-  * __getReflectionAdapter__ - Returns the Reflection Adapter
+  * __getReflectorManager__ - Returns the ReflectionManager
+  * __getReflector__ - Returns the ReflectorClass
+  * __getConstraintHandlerRegister__ - Returns the constraint logger
   * __setObject__ - Set the object to be collected, if the object is not set, all processing associated with the object will not run and the DTO will work without the object
   * __getObject__ - Get the collected object, must be called after the collect method
   * __addDataTransferCollection__ - Add collection or array of collections with symfony validator constraints (assert)
@@ -233,6 +249,8 @@ use Codememory\Dto\Interfaces\ConstraintInterface;
 use Codememory\Dto\Interfaces\ConstraintHandlerInterface;
 use Codememory\Dto\DataTransferControl;
 use Codememory\Dto\Registers\ConstraintHandlerRegister;
+use Codememory\Reflection\ReflectorManager;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 // Let's create a constraint that will combine the value of all properties and separate it with a certain character
 #[Attribute(Attribute::TARGET_PROPERTY)] // Will only apply to properties
@@ -268,7 +286,9 @@ final class PropertyConcatenationConstraintHandler implements ConstraintHandlerI
 }
 
 // Now let's register our handler so that DataTransfer can receive it
-ConstraintHandlerRegister::register(new PropertyConcatenationConstraintHandler());
+$constraintHandlerRegister = new ConstraintHandlerRegister();
+
+$constraintHandlerRegister->register(new PropertyConcatenationConstraintHandler());
 
 // Let's test our constraint
 final class TestDto extends DataTransfer
@@ -280,7 +300,11 @@ final class TestDto extends DataTransfer
     public ?string $fullName = null;
 }
 
-$testDto = new TestDto(new BaseCollector());
+$testDto = new TestDto(
+    new BaseCollector(),
+    new ReflectorManager(new FilesystemAdapter('dto', '/var/cache/codememory')),
+    $constraintHandlerRegister
+);
 
 $testDto->collect([
     'name' => 'Code',
@@ -312,7 +336,7 @@ final class MyCollector implements CollectorInterface
             $attributeInstance = $attribute->newInstance();
         
             if ($attributeInstance instanceof ConstraintInterface) {
-                $constraintHandler = ConstraintHandlerRegister::getHandler($attributeInstance->getHandler());
+                $constraintHandler = $dataTransferControl->dataTransfer->getConstraintHandlerRegister()->getHandler($attributeInstance->getHandler());
                 
                 // ....
             }
