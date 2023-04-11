@@ -12,17 +12,16 @@ final class ConstraintHandlerRegister
 
     public function __construct()
     {
-        $this->handlers = [
-            Constraints\IgnoreSetterCallHandler::class => new Constraints\IgnoreSetterCallHandler(),
-            Constraints\NestedDTOHandler::class => new Constraints\NestedDTOHandler(),
-            Constraints\ToEnumHandler::class => new Constraints\ToEnumHandler(),
-            Constraints\ToTypeHandler::class => new Constraints\ToTypeHandler(),
-            Constraints\ValidationHandler::class => new Constraints\ValidationHandler(),
-            Constraints\CallbackHandler::class => new Constraints\CallbackHandler(),
-            Constraints\ExpectArrayHandler::class => new Constraints\ExpectArrayHandler(),
-            Constraints\ExpectMultiArrayHandler::class => new Constraints\ExpectMultiArrayHandler(),
-            Constraints\XSSHandler::class => new Constraints\XSSHandler()
-        ];
+        $this->register(new Constraints\IgnoreSetterCallHandler());
+        $this->register(new Constraints\NestedDTOHandler());
+        $this->register(new Constraints\ToEnumHandler());
+        $this->register(new Constraints\ToTypeHandler());
+        $this->register(new Constraints\ValidationHandler());
+        $this->register(new Constraints\ValidationHandler());
+        $this->register(new Constraints\CallbackHandler());
+        $this->register(new Constraints\ExpectArrayHandler());
+        $this->register(new Constraints\ExpectMultiArrayHandler());
+        $this->register(new Constraints\XSSHandler());
     }
 
     public function register(ConstraintHandlerInterface $constraintHandler): void
