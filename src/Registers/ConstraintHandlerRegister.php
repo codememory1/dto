@@ -13,15 +13,15 @@ final class ConstraintHandlerRegister
     public function __construct()
     {
         $this->handlers = [
-            new Constraints\IgnoreSetterCallHandler(),
-            new Constraints\NestedDTOHandler(),
-            new Constraints\ToEnumHandler(),
-            new Constraints\ToTypeHandler(),
-            new Constraints\ValidationHandler(),
-            new Constraints\CallbackHandler(),
-            new Constraints\ExpectArrayHandler(),
-            new Constraints\ExpectMultiArrayHandler(),
-            new Constraints\XSSHandler()
+            Constraints\IgnoreSetterCallHandler::class => new Constraints\IgnoreSetterCallHandler(),
+            Constraints\NestedDTOHandler::class => new Constraints\NestedDTOHandler(),
+            Constraints\ToEnumHandler::class => new Constraints\ToEnumHandler(),
+            Constraints\ToTypeHandler::class => new Constraints\ToTypeHandler(),
+            Constraints\ValidationHandler::class => new Constraints\ValidationHandler(),
+            Constraints\CallbackHandler::class => new Constraints\CallbackHandler(),
+            Constraints\ExpectArrayHandler::class => new Constraints\ExpectArrayHandler(),
+            Constraints\ExpectMultiArrayHandler::class => new Constraints\ExpectMultiArrayHandler(),
+            Constraints\XSSHandler::class => new Constraints\XSSHandler()
         ];
     }
 
