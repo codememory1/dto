@@ -8,7 +8,7 @@ use Codememory\Dto\Interfaces\ConstraintHandlerInterface;
 
 final class ConstraintHandlerRegister
 {
-    private array $handlers;
+    private array $handlers = [];
 
     public function __construct()
     {
