@@ -6,7 +6,6 @@ use Codememory\Dto\DataTransferControl;
 use Codememory\Dto\Exceptions\ConstraintHandlerNotFoundException;
 use Codememory\Dto\Interfaces\CollectorInterface;
 use Codememory\Dto\Interfaces\ConstraintInterface;
-use Codememory\Dto\Registers\ConstraintHandlerRegister;
 use Codememory\Reflection\Reflectors\AttributeReflector;
 use Codememory\Reflection\Reflectors\PropertyReflector;
 use function Symfony\Component\String\u;

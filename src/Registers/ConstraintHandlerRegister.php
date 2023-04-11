@@ -2,9 +2,9 @@
 
 namespace Codememory\Dto\Registers;
 
+use Codememory\Dto\Constraints;
 use Codememory\Dto\Exceptions\ConstraintHandlerNotFoundException;
 use Codememory\Dto\Interfaces\ConstraintHandlerInterface;
-use Codememory\Dto\Constraints;
 
 final class ConstraintHandlerRegister
 {
