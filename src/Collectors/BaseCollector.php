@@ -48,7 +48,10 @@ final class BaseCollector implements CollectorInterface
             throw new ConstraintHandlerNotFoundException($constraint->getHandler());
         }
 
-        ConstraintHandlerRegister::getHandler($constraint->getHandler())->handle($constraint, $dataTransferControl);
+        $dataTransferControl->dataTransfer
+            ->getConstraintHandlerRegister()
+            ->getHandler($constraint->getHandler())
+            ->handle($constraint, $dataTransferControl);
     }
 
     private function getValueFromData(array $data, PropertyReflector $property): mixed

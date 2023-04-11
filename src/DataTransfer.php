@@ -4,6 +4,7 @@ namespace Codememory\Dto;
 
 use Codememory\Dto\Interfaces\CollectorInterface;
 use Codememory\Dto\Interfaces\DataTransferInterface;
+use Codememory\Dto\Registers\ConstraintHandlerRegister;
 use Codememory\Dto\Validator\Constraints\Collection;
 use Codememory\Reflection\ReflectorManager;
 use Codememory\Reflection\Reflectors\ClassReflector;
@@ -29,6 +30,7 @@ class DataTransfer implements DataTransferInterface
     public function __construct(
         protected readonly CollectorInterface $collector,
         protected readonly ReflectorManager $reflectorManager,
+        protected readonly ConstraintHandlerRegister $constraintHandlerRegister
     ) {
         $this->reflector = $reflectorManager->getReflector(static::class);
         $this->listDataTransferCollection[static::class] = new DataTransferCollection($this, []);
@@ -42,6 +44,11 @@ class DataTransfer implements DataTransferInterface
     public function getReflector(): ClassReflector
     {
         return $this->reflector;
+    }
+
+    public function getConstraintHandlerRegister(): ConstraintHandlerRegister
+    {
+        return $this->constraintHandlerRegister;
     }
 
     public function setObject(object $object): DataTransferInterface
