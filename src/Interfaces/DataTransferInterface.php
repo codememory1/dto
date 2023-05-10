@@ -27,4 +27,6 @@ interface DataTransferInterface
     public function getListDataTransferCollection(): array;
 
     public function collect(array $data): self;
+
+    public function recollectObject(object $newObject): self;
 }
