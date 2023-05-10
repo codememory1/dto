@@ -24,6 +24,11 @@ class DataTransfer implements DataTransferInterface
     protected ?object $object = null;
 
     /**
+     * @var array<string, mixed>
+     */
+    protected array $collectedObjectData = [];
+
+    /**
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
@@ -106,6 +111,17 @@ class DataTransfer implements DataTransferInterface
         return $this;
     }
 
+    public function recollectObject(object $newObject): DataTransferInterface
+    {
+        $this->setObject($newObject);
+
+        foreach ($this->collectedObjectData as $setterName => $value) {
+            $this->object->{$setterName}($value);
+        }
+
+        return $this;
+    }
+
     private function dataTransferCollector(DataTransferControl $dataTransferControl): void
     {
         $dataTransferControl->property->setValue($this, $dataTransferControl->getDataTransferValue());
@@ -115,7 +131,12 @@ class DataTransfer implements DataTransferInterface
     {
         if (null !== $this->object) {
             if (!$dataTransferControl->isIgnoreSetterCall()) {
-                $this->object->{$dataTransferControl->getSetterMethodNameToObject()}($dataTransferControl->getObjectValue());
+                $setterName = $dataTransferControl->getSetterMethodNameToObject();
+                $value = $dataTransferControl->getObjectValue();
+
+                $this->object->{$setterName}($value);
+
+                $this->collectedObjectData[$setterName] = $value;
             }
         }
     }
