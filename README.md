@@ -166,12 +166,9 @@ final class TestDto extends DataTransfer
     * __$entity__ - Entity namespace, by default will be determined by property type
     * __$byKey__ - The key by which to search for a record in the database
     * __$whereCallback__ - The name of the method from DataTransfer that should return the array where
-        * __$value__ - Value from collect data
+        * __$values__ - Array values
         * __$dataTransferControl__ - API for managing logic
     * __$unique (default: true)__ - Whether to pass input array through array_unique function
-    * __$entityNotFoundCallback (default: null)__ - Own handler, if the entity is not found, you need to specify the method name from DataTransfer
-        * __$value__ - Value from collect data
-        * __$dataTransferControl__ - API for managing logic
     * __$valueConverterCallback (default: null)__ - The name of the method to convert the value of each iteration of the input array. The method must return a value
         * __$value__ - The value of each iteration
         * __$dataTransferControl__ - API for managing logic
