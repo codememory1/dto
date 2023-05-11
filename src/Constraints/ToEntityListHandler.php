@@ -29,21 +29,13 @@ final class ToEntityListHandler implements ConstraintHandlerInterface
 
         $this->throwIfMethodsNotFound($constraint, $dataTransferControl);
 
-        foreach ($values as &$value) {
-            if (null !== $constraint->byKey) {
-                $entity = $repository->findOneBy([$constraint->byKey => $value]);
-            } else {
-                $entity = $dataTransfer->{$constraint->whereCallback}($value, $repository, $dataTransferControl);
-            }
-
-            if (null !== $constraint->entityNotFoundCallback && null === $entity) {
-                $dataTransfer->{$constraint->entityNotFoundCallback}($value, $dataTransferControl);
-            } else {
-                $value = $entity;
-            }
+        if (null !== $constraint->byKey) {
+            $entities = $repository->findBy([$constraint->byKey => $values]);
+        } else {
+            $entities = $dataTransfer->{$constraint->whereCallback}($values, $repository, $dataTransferControl);;
         }
 
-        $dataTransferControl->setValue($values);
+        $dataTransferControl->setValue($entities);
     }
 
     /**
@@ -54,10 +46,6 @@ final class ToEntityListHandler implements ConstraintHandlerInterface
     private function throwIfMethodsNotFound(ConstraintInterface $constraint, DataTransferControl $dataTransferControl): void
     {
         $dataTransfer = $dataTransferControl->dataTransfer;
-
-        if (null !== $constraint->entityNotFoundCallback && !method_exists($dataTransfer, $constraint->entityNotFoundCallback)) {
-            throw new MethodNotFoundException($dataTransfer::class, $constraint->entityNotFoundCallback);
-        }
 
         if (null !== $constraint->whereCallback) {
             throw new MethodNotFoundException($dataTransfer::class, $constraint->whereCallback);

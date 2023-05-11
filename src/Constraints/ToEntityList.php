@@ -13,7 +13,6 @@ final class ToEntityList implements ConstraintInterface
         public readonly ?string $byKey = null,
         public readonly ?string $whereCallback = null,          /* Method name of DataTransfer */
         public readonly bool $unique = true,
-        public readonly ?string $entityNotFoundCallback = null, /* Method name of DataTransfer */
         public readonly ?string $valueConverterCallback = null  /* Method name of DataTransfer */
     ) {
     }
