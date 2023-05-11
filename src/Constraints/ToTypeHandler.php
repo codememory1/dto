@@ -85,10 +85,10 @@ final class ToTypeHandler implements ConstraintHandlerInterface
     private function toString(mixed $value): string
     {
         if (is_array($value)) {
-            return json_encode($value);
+            return trim(json_encode($value));
         }
 
-        return (string) $value;
+        return trim((string) $value);
     }
 
     private function toInteger(mixed $value): int
