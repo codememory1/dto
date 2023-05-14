@@ -22,6 +22,7 @@ final class ConstraintHandlerRegister
         $this->register(new Constraints\ExpectArrayHandler());
         $this->register(new Constraints\ExpectMultiArrayHandler());
         $this->register(new Constraints\XSSHandler());
+        $this->register(new Constraints\ExpectOneDimensionalArrayHandler());
     }
 
     public function register(ConstraintHandlerInterface $constraintHandler): void
