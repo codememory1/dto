@@ -20,7 +20,7 @@ final class AsPatchHandler implements ConstraintHandlerInterface
      */
     public function handle(ConstraintInterface $constraint, DataTransferControl $dataTransferControl): void
     {
-        if ($this->isPatch() && !$this->keyInRequest($dataTransferControl)) {
+        if ($this->isPatch() && !$this->dataKeyExistInRequest($dataTransferControl)) {
             $dataTransferControl->setIsSkipProperty(true);
             $dataTransferControl->setIsIgnoreSetterCall(true);
         } else {
@@ -36,7 +36,7 @@ final class AsPatchHandler implements ConstraintHandlerInterface
         return Request::METHOD_PATCH === $this->request->getMethod();
     }
 
-    private function keyInRequest(DataTransferControl $dataTransferControl): bool
+    private function dataKeyExistInRequest(DataTransferControl $dataTransferControl): bool
     {
         return array_key_exists($dataTransferControl->getDataKey(), $this->requestData());
     }

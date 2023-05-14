@@ -198,6 +198,10 @@ final class TestDto extends DataTransfer
     * __$expectKeys__ - Array of pending keys, the rest will be removed
     * __$itemKeyAsNumber (default: true)__ - Converts all item keys to numeric order
 
+
+* __ExpectOneDimensionalArray__ - Expects a one-dimensional array
+  * __$types (default: any)__ - Array of skipped value types
+
 ### Parsing DataTransferControl
 > This is an API class that comes inside a constraint to manage the state or values of the dto, the object being collected, and the value from collect data
 
