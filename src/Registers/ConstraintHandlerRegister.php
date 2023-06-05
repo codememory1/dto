@@ -14,6 +14,7 @@ final class ConstraintHandlerRegister
     {
         $this->register(new Constraints\IgnoreSetterCallHandler());
         $this->register(new Constraints\NestedDTOHandler());
+        $this->register(new Constraints\SetterMethodHandler());
         $this->register(new Constraints\ToEnumHandler());
         $this->register(new Constraints\ToTypeHandler());
         $this->register(new Constraints\ValidationHandler());
