@@ -8,6 +8,7 @@ use Codememory\Dto\Registers\ConstraintHandlerRegister;
 use Codememory\Dto\Validator\Constraints\Collection;
 use Codememory\Reflection\ReflectorManager;
 use Codememory\Reflection\Reflectors\ClassReflector;
+use ReflectionProperty;
 use function is_array;
 use LogicException;
 use Psr\Cache\InvalidArgumentException;
@@ -95,7 +96,9 @@ class DataTransfer implements DataTransferInterface
 
     public function collect(array $data): DataTransferInterface
     {
-        foreach ($this->reflector->getPublicProperties() as $property) {
+        $properties = $this->reflector->getPropertiesIncludingParent([DataTransfer::class], ReflectionProperty::IS_PUBLIC);
+
+        foreach ($properties as $property) {
             $dataTransferControl = new DataTransferControl($this, $property, $data);
 
             $this->collector->collect($dataTransferControl);
