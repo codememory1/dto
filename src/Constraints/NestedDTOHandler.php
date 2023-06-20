@@ -26,7 +26,7 @@ final class NestedDTOHandler implements ConstraintHandlerInterface
             throw new DataTransferNotFoundException($constraint->dto);
         }
 
-        if (null !== $constraint->object && !class_exists($constraint->object)) {
+        if (null !== $constraint->object && 'current' !== $constraint->object && !class_exists($constraint->object)) {
             throw new RuntimeException(sprintf('Class %s not found. For DataTransfer constraint "NestedDataTransferConstraint"', $constraint->object));
         }
 
