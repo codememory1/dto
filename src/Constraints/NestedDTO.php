@@ -10,8 +10,9 @@ use Codememory\Dto\Interfaces\ConstraintInterface;
 final class NestedDTO implements ConstraintInterface
 {
     public function __construct(
-        public readonly string $dataTransfer,
+        public readonly string $dto,
         public readonly ?string $object = null,
+        public readonly ?string $thenCallback = null,
         public readonly string $collector = BaseCollector::class
     ) {
     }
