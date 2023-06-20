@@ -146,9 +146,11 @@ final class TestDto extends DataTransfer
 * __IgnoreSetterCall__ - Ignore the setter call on the collected object
 
 
-* __NestedDataTransfer__ - Nested DataTransfer, nest in DataTransfer property
-    * __$dataTransfer__ - DataTransfer namespace
+* __NestedDTO__ - Nested DataTransfer, nest in DataTransfer property
+    * __$dto__ - DataTransfer namespace
     * __$object (default: null)__ - The namespace of the object to be collected. If the value is not passed, the property on which this constraint is attached will ignore the setter call on the collected object
+    * __$thenCallback (default: null)__ - The name of the callback method, which should return a bool value indicating whether it is worth checking out or not
+    * __$collector (default: Codememory\Dto\Collectors\BaseCollector)__ - The collector with which the nested DTO will be collected
 
 
 * __ToEntity__ - Translate value from collect data to doctrine entity (Requires registration)
