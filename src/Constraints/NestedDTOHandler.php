@@ -34,6 +34,8 @@ final class NestedDTOHandler implements ConstraintHandlerInterface
             throw new ConstraintNotFoundException($constraint->collector);
         }
 
+        $dataTransferControl->setIsIgnoreSetterCall(true);
+
         $currentDto = $dataTransferControl->dataTransfer;
         $allowNestedDto = true;
 
@@ -47,7 +49,7 @@ final class NestedDTOHandler implements ConstraintHandlerInterface
 
             $dataTransferControl->setDataTransferValue($nestedDto);
 
-            $currentDto->addDataTransferCollection($constraint->dataTransfer, $nestedDto->getListDataTransferCollection());
+            $currentDto->addDataTransferCollection($constraint->dto, $nestedDto->getListDataTransferCollection());
         } else {
             $dataTransferControl->setDataTransferValue($dataTransferControl->property->getDefaultValue());
         }
@@ -67,12 +69,10 @@ final class NestedDTOHandler implements ConstraintHandlerInterface
     private function createDTO(NestedDTO $constraint, CollectorInterface $collector, DataTransferControl $dataTransferControl): DataTransferInterface
     {
         $currentDto = $dataTransferControl->dataTransfer;
-        $nestedDto = new ($constraint->dataTransfer)($collector, $currentDto->getReflectorManager(), $currentDto->getConstraintHandlerRegister());
+        $nestedDto = new ($constraint->dto)($collector, $currentDto->getReflectorManager(), $currentDto->getConstraintHandlerRegister());
 
         if (null !== $constraint->object) {
             $nestedDto->setObject(new ($constraint->object)());
-        } else {
-            $dataTransferControl->setIsIgnoreSetterCall(true);
         }
 
         $nestedDto->collect(is_array($dataTransferControl->getDataValue()) ? $dataTransferControl->getDataValue() : []);
