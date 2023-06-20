@@ -72,7 +72,9 @@ final class NestedDTOHandler implements ConstraintHandlerInterface
         $nestedDto = new ($constraint->dto)($collector, $currentDto->getReflectorManager(), $currentDto->getConstraintHandlerRegister());
 
         if (null !== $constraint->object) {
-            $nestedDto->setObject(new ($constraint->object)());
+            $object = 'current' === $constraint->object ? $dataTransferControl->dataTransfer->getObject() : new ($constraint->object)();
+
+            $nestedDto->setObject($object);
         }
 
         $nestedDto->collect(is_array($dataTransferControl->getDataValue()) ? $dataTransferControl->getDataValue() : []);
