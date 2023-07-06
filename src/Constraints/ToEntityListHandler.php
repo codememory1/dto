@@ -47,7 +47,7 @@ final class ToEntityListHandler implements ConstraintHandlerInterface
     {
         $dataTransfer = $dataTransferControl->dataTransfer;
 
-        if (null !== $constraint->whereCallback) {
+        if (null !== $constraint->whereCallback && !method_exists($dataTransfer, $constraint->whereCallback)) {
             throw new MethodNotFoundException($dataTransfer::class, $constraint->whereCallback);
         }
     }
