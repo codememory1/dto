@@ -20,14 +20,18 @@ final class ToEnumHandler implements ConstraintHandlerInterface
         $dataTransferControl->setValue(null);
 
         if (class_exists($enum)) {
-            if (!$constraint->byValue) {
-                $casePath = "{$enum}::{$dataTransferControl->getDataValue()}";
+            $dataValue = $dataTransferControl->getDataValue();
 
-                if (defined($casePath)) {
-                    $dataTransferControl->setValue(constant($casePath));
+            if (is_string($dataValue) || is_numeric($dataValue)) {
+                if (!$constraint->byValue) {
+                    $casePath = "{$enum}::{$dataValue}";
+
+                    if (defined($casePath)) {
+                        $dataTransferControl->setValue(constant($casePath));
+                    }
+                } else {
+                    $dataTransferControl->setValue($enum::tryFrom($dataTransferControl->getDataValue()));
                 }
-            } else {
-                $dataTransferControl->setValue($enum::tryFrom($dataTransferControl->getDataValue()));
             }
         }
     }
