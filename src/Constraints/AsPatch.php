@@ -1,6 +1,6 @@
 <?php
 
-namespace Codememory\Dto\Constraints;
+namespace Codememory\ApiBundle\Constraints\Dto;
 
 use Attribute;
 use Codememory\Dto\Interfaces\ConstraintInterface;

@@ -104,7 +104,7 @@ class DataTransfer implements DataTransferInterface
             $this->collector->collect($dataTransferControl);
 
             if ($dataTransferControl->isSkipProperty()) {
-                break;
+                continue;
             }
 
             $this->dataTransferCollector($dataTransferControl);
