@@ -2,17 +2,17 @@
 
 namespace Codememory\Dto;
 
-use Codememory\Dto\Interfaces\DataTransferInterface;
+use Codememory\Dto\Interfaces\DataTransferObjectInterface;
 
 final class DataTransferCollection
 {
     public function __construct(
-        private readonly DataTransferInterface $dataTransfer,
+        private readonly DataTransferObjectInterface $dataTransfer,
         private array $propertyValidation = []
     ) {
     }
 
-    public function getDataTransfer(): DataTransferInterface
+    public function getDataTransfer(): DataTransferObjectInterface
     {
         return $this->dataTransfer;
     }

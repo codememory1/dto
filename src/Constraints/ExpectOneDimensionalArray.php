@@ -17,8 +17,8 @@ final class ExpectOneDimensionalArray implements ConstraintInterface
         public readonly array $types = []
     ) {
         foreach ($this->types as $type) {
-            if (!in_array($type, self::TYPES)) {
-                throw new LogicException("Undefined type $type");
+            if (!in_array($type, self::TYPES, true)) {
+                throw new LogicException("Undefined type {$type}");
             }
         }
     }

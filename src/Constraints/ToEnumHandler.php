@@ -7,6 +7,7 @@ use Codememory\Dto\Interfaces\ConstraintHandlerInterface;
 use Codememory\Dto\Interfaces\ConstraintInterface;
 use function constant;
 use function defined;
+use function is_string;
 
 final class ToEnumHandler implements ConstraintHandlerInterface
 {

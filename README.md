@@ -21,7 +21,7 @@ $ composer require codememory/dto
 ```php
 <?php
 
-use Codememory\Dto\DataTransfer;
+use Codememory\Dto\DataTransferObject2;
 use Codememory\Dto\Collectors\BaseCollector;
 use Codememory\Dto\Constraints as DtoConstraints;
 use Codememory\Dto\Registers\ConstraintHandlerRegister;
@@ -35,7 +35,7 @@ enum StatusEnum
 }
 
 #[DtoConstraints\ToType]
-final class UserDto extends DataTransfer
+final class UserDto extends DataTransferObject2
 {
     public ?string $name = null;
     public ?string $surname = null;

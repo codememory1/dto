@@ -4,11 +4,11 @@ namespace Codememory\Dto\Constraints;
 
 use Codememory\Dto\DataTransferControl;
 use Codememory\Dto\Exceptions\ConstraintNotFoundException;
-use Codememory\Dto\Exceptions\DataTransferNotFoundException;
+use Codememory\Dto\Exceptions\DataTransferObjectNotFoundException;
 use Codememory\Dto\Interfaces\CollectorInterface;
 use Codememory\Dto\Interfaces\ConstraintHandlerInterface;
 use Codememory\Dto\Interfaces\ConstraintInterface;
-use Codememory\Dto\Interfaces\DataTransferInterface;
+use Codememory\Dto\Interfaces\DataTransferObjectInterface;
 use function is_array;
 use LogicException;
 use RuntimeException;
@@ -23,7 +23,7 @@ final class NestedDTOHandler implements ConstraintHandlerInterface
     public function handle(ConstraintInterface $constraint, DataTransferControl $dataTransferControl): void
     {
         if (!class_exists($constraint->dto)) {
-            throw new DataTransferNotFoundException($constraint->dto);
+            throw new DataTransferObjectNotFoundException($constraint->dto);
         }
 
         if (null !== $constraint->object && 'current' !== $constraint->object && !class_exists($constraint->object)) {
@@ -66,7 +66,7 @@ final class NestedDTOHandler implements ConstraintHandlerInterface
         return $collector;
     }
 
-    private function createDTO(NestedDTO $constraint, CollectorInterface $collector, DataTransferControl $dataTransferControl): DataTransferInterface
+    private function createDTO(NestedDTO $constraint, CollectorInterface $collector, DataTransferControl $dataTransferControl): DataTransferObjectInterface
     {
         $currentDto = $dataTransferControl->dataTransfer;
         $nestedDto = new ($constraint->dto)($collector, $currentDto->getReflectorManager(), $currentDto->getConstraintHandlerRegister());

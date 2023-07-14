@@ -3,7 +3,7 @@
 namespace Codememory\Dto\Validator\Constraints;
 
 use Codememory\Dto\DataTransferCollection;
-use Codememory\Dto\Interfaces\DataTransferInterface;
+use Codememory\Dto\Interfaces\DataTransferObjectInterface;
 use function is_array;
 use LogicException;
 use RuntimeException;
@@ -43,7 +43,7 @@ final class CollectionValidator extends ConstraintValidator
         }
     }
 
-    private function generatePath(DataTransferInterface $dataTransfer, string $propertyName): string
+    private function generatePath(DataTransferObjectInterface $dataTransfer, string $propertyName): string
     {
         return sprintf('%s_%s', $dataTransfer::class, $propertyName);
     }

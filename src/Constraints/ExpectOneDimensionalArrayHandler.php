@@ -5,6 +5,8 @@ namespace Codememory\Dto\Constraints;
 use Codememory\Dto\DataTransferControl;
 use Codememory\Dto\Interfaces\ConstraintHandlerInterface;
 use Codememory\Dto\Interfaces\ConstraintInterface;
+use function gettype;
+use function is_array;
 
 final class ExpectOneDimensionalArrayHandler implements ConstraintHandlerInterface
 {
@@ -18,7 +20,7 @@ final class ExpectOneDimensionalArrayHandler implements ConstraintHandlerInterfa
         foreach ($dataTransferControl->getDataTransferValue() as $value) {
             $valueType = gettype($value);
 
-            if (!is_array($value) && ([] === $constraint->types || in_array($valueType, $constraint->types))) {
+            if (!is_array($value) && ([] === $constraint->types || in_array($valueType, $constraint->types, true))) {
                 $values[] = $value;
             }
         }

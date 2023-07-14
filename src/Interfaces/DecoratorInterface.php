@@ -2,7 +2,7 @@
 
 namespace Codememory\Dto\Interfaces;
 
-interface ConstraintInterface
+interface DecoratorInterface
 {
     public function getHandler(): string;
 }

@@ -2,64 +2,54 @@
 
 namespace Codememory\Dto\Collectors;
 
-use Codememory\Dto\DataTransferControl;
-use Codememory\Dto\Exceptions\ConstraintHandlerNotFoundException;
+use Codememory\Dto\Exceptions\DecoratorHandlerNotRegisteredException;
 use Codememory\Dto\Interfaces\CollectorInterface;
-use Codememory\Dto\Interfaces\ConstraintInterface;
+use Codememory\Dto\Interfaces\DecoratorInterface;
+use Codememory\Dto\Interfaces\ExecutionContextInterface;
 use Codememory\Reflection\Reflectors\AttributeReflector;
-use Codememory\Reflection\Reflectors\PropertyReflector;
-use function Symfony\Component\String\u;
 
 final class BaseCollector implements CollectorInterface
 {
-    public function collect(DataTransferControl $dataTransferControl): void
+    /**
+     * @throws DecoratorHandlerNotRegisteredException
+     */
+    public function collect(ExecutionContextInterface $context): void
     {
-        $dataTransferControl->setDataValue($this->getValueFromData($dataTransferControl->data, $dataTransferControl->property));
-        $dataTransferControl->setSetterMethodNameToObject($this->getSetterMethodName($dataTransferControl->property));
-        $dataTransferControl->setDataTransferValue($dataTransferControl->getDataValue());
-        $dataTransferControl->setObjectValue($dataTransferControl->getDataTransferValue());
-        $dataTransferControl->setIsSkipProperty(false);
-        $dataTransferControl->setIsIgnoreSetterCall(false);
-        $dataTransferControl->setDataKey(u($dataTransferControl->property->getName())->snake()->toString());
+        foreach ($this->getAttributes($context) as $attribute) {
+            /** @var DecoratorInterface $decorator */
+            $decorator = $attribute->getInstance();
 
-        /** @var AttributeReflector[] $attributes */
-        $attributes = [
-            ...$dataTransferControl->dataTransfer->getReflector()->getAttributes(),
-            ...$dataTransferControl->property?->getAttributes() ?: []
-        ];
+            $this->decoratorHandler($decorator, $context);
 
-        foreach ($attributes as $attribute) {
-            $attributeInstance = $attribute->getInstance();
-
-            if ($attributeInstance instanceof ConstraintInterface) {
-                $this->constraintHandler($attributeInstance, $dataTransferControl);
-
-                if ($dataTransferControl->isSkipProperty()) {
-                    break;
-                }
+            if ($context->isSkippedThisProperty()) {
+                break;
             }
         }
     }
 
-    private function constraintHandler(ConstraintInterface $constraint, DataTransferControl $dataTransferControl): void
+    /**
+     * @return array<int, AttributeReflector>
+     */
+    private function getAttributes(ExecutionContextInterface $context): array
     {
-        if (!class_exists($constraint->getHandler())) {
-            throw new ConstraintHandlerNotFoundException($constraint->getHandler());
+        return array_filter([
+            ...$context->getDataTransferObject()->getClassReflector()->getAttributes(),
+            ...$context->getProperty()->getAttributes()
+        ], static fn (AttributeReflector $attribute) => $attribute instanceof DecoratorInterface);
+    }
+
+    /**
+     * @throws DecoratorHandlerNotRegisteredException
+     */
+    private function decoratorHandler(DecoratorInterface $decorator, ExecutionContextInterface $context): void
+    {
+        if (!class_exists($decorator->getHandler())) {
+            throw new DecoratorHandlerNotRegisteredException($decorator->getHandler());
         }
 
-        $dataTransferControl->dataTransfer
-            ->getConstraintHandlerRegister()
-            ->getHandler($constraint->getHandler())
-            ->handle($constraint, $dataTransferControl);
-    }
-
-    private function getValueFromData(array $data, PropertyReflector $property): mixed
-    {
-        return $data[u($property->getName())->snake()->toString()] ?? null;
-    }
-
-    private function getSetterMethodName(PropertyReflector $property): string
-    {
-        return u(sprintf('set_%s', $property->getName()))->camel()->toString();
+        $context->getDataTransferObject()
+            ->getConfiguration()
+            ->getDecoratorHandler($decorator->getHandler())
+            ->handle($decorator, $context);
     }
 }
