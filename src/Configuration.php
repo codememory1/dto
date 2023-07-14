@@ -69,6 +69,18 @@ class Configuration implements ConfigurationInterface
 
     private function decoratorHandlersRegistrationWrapper(): void
     {
-        // TODO: Зарегестрировать декораторы! Например: $this->registerDecoratorHandler(new Decorator\ToEnumHandler());
+        $this->registerDecoratorHandler(new Decorators\CallbackHandler());
+        $this->registerDecoratorHandler(new Decorators\ExpectArrayHandler());
+        $this->registerDecoratorHandler(new Decorators\ExpectMultiArrayHandler());
+        $this->registerDecoratorHandler(new Decorators\ExpectOneDimensionalArrayHandler());
+        $this->registerDecoratorHandler(new Decorators\IgnoreSetterCallForHarvestableObjectHandler());
+        $this->registerDecoratorHandler(new Decorators\NestedDTOHandler());
+        $this->registerDecoratorHandler(new Decorators\PrefixSetterMethodForHarvestableObjectHandler());
+        $this->registerDecoratorHandler(new Decorators\SetterMethodForHarvestableObjectHandler());
+        $this->registerDecoratorHandler(new Decorators\ToEnumHandler());
+        $this->registerDecoratorHandler(new Decorators\ToEnumListHandler());
+        $this->registerDecoratorHandler(new Decorators\ToTypeHandler());
+        $this->registerDecoratorHandler(new Decorators\ValidationHandler());
+        $this->registerDecoratorHandler(new Decorators\XSSHandler());
     }
 }

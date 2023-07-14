@@ -19,10 +19,12 @@ final class BaseCollector implements CollectorInterface
             /** @var DecoratorInterface $decorator */
             $decorator = $attribute->getInstance();
 
-            $this->decoratorHandler($decorator, $context);
+            if ($decorator instanceof DecoratorInterface) {
+                $this->decoratorHandler($decorator, $context);
 
-            if ($context->isSkippedThisProperty()) {
-                break;
+                if ($context->isSkippedThisProperty()) {
+                    break;
+                }
             }
         }
     }
@@ -32,10 +34,10 @@ final class BaseCollector implements CollectorInterface
      */
     private function getAttributes(ExecutionContextInterface $context): array
     {
-        return array_filter([
+        return [
             ...$context->getDataTransferObject()->getClassReflector()->getAttributes(),
             ...$context->getProperty()->getAttributes()
-        ], static fn (AttributeReflector $attribute) => $attribute instanceof DecoratorInterface);
+        ];
     }
 
     /**

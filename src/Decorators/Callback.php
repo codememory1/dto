@@ -1,12 +1,12 @@
 <?php
 
-namespace Codememory\Dto\Constraints;
+namespace Codememory\Dto\Decorators;
 
 use Attribute;
-use Codememory\Dto\Interfaces\ConstraintInterface;
+use Codememory\Dto\Interfaces\DecoratorInterface;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class Callback implements ConstraintInterface
+final class Callback implements DecoratorInterface
 {
     public function __construct(
         public readonly string $methodName

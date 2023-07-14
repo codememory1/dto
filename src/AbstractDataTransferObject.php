@@ -2,22 +2,30 @@
 
 namespace Codememory\Dto;
 
+use Codememory\Dto\Collection\DataTransferObjectPropertyConstraintsCollection;
 use Codememory\Dto\Interfaces\CollectorInterface;
 use Codememory\Dto\Interfaces\ConfigurationInterface;
 use Codememory\Dto\Interfaces\DataTransferObjectInterface;
 use Codememory\Dto\Interfaces\ExecutionContextFactoryInterface;
 use Codememory\Dto\Interfaces\ExecutionContextInterface;
+use Codememory\Dto\Validator\Constraints\Collection;
 use Codememory\Reflection\ReflectorManager;
 use Codememory\Reflection\Reflectors\ClassReflector;
 use Codememory\Reflection\Reflectors\PropertyReflector;
+use function is_array;
 use Psr\Cache\InvalidArgumentException;
 use ReflectionException;
 
+/**
+ * @template Entity as mixed
+ */
+#[Collection('getListDataTransferObjectPropertyConstrainsCollection')]
 abstract class AbstractDataTransferObject implements DataTransferObjectInterface
 {
     protected array $_collectedDataForHarvestableObject = [];
     private ?object $harvestableObject = null;
     private ?ClassReflector $classReflector = null;
+    private array $listDataTransferObjectPropertyConstrainsCollection = [];
 
     public function __construct(
         protected readonly CollectorInterface $_collector,
@@ -37,6 +45,11 @@ abstract class AbstractDataTransferObject implements DataTransferObjectInterface
         return $this->_configuration;
     }
 
+    public function getExecutionContextFactory(): ExecutionContextFactoryInterface
+    {
+        return $this->_executionContextFactory;
+    }
+
     public function getReflectorManager(): ReflectorManager
     {
         return $this->_reflectorManager;
@@ -51,6 +64,9 @@ abstract class AbstractDataTransferObject implements DataTransferObjectInterface
         return $this->classReflector ?: $this->classReflector = $this->_reflectorManager->getReflector(static::class);
     }
 
+    /**
+     * @return null|Entity
+     */
     public function getHarvestableObject(): ?object
     {
         return $this->harvestableObject;
@@ -61,6 +77,31 @@ abstract class AbstractDataTransferObject implements DataTransferObjectInterface
         $this->harvestableObject = $object;
 
         return $this;
+    }
+
+    public function addDataTransferObjectPropertyConstraintsCollection(DataTransferObjectInterface $dataTransferObject, DataTransferObjectPropertyConstraintsCollection|array $dataTransferObjectPropertyConstraintsCollection): self
+    {
+        if (is_array($dataTransferObjectPropertyConstraintsCollection)) {
+            foreach ($dataTransferObjectPropertyConstraintsCollection as $dataTransferObjectNamespace => $collection) {
+                if ($collection instanceof DataTransferObjectPropertyConstraintsCollection) {
+                    $this->listDataTransferObjectPropertyConstrainsCollection[$dataTransferObjectNamespace] = $collection;
+                }
+            }
+        } else {
+            $this->listDataTransferObjectPropertyConstrainsCollection[$dataTransferObject::class] = $dataTransferObjectPropertyConstraintsCollection;
+        }
+
+        return $this;
+    }
+
+    public function getListDataTransferObjectPropertyConstrainsCollection(): array
+    {
+        return $this->listDataTransferObjectPropertyConstrainsCollection;
+    }
+
+    public function getDataTransferObjectPropertyConstrainsCollection(string $dataTransferObjectNamespace): ?DataTransferObjectPropertyConstraintsCollection
+    {
+        return $this->listDataTransferObjectPropertyConstrainsCollection[$dataTransferObjectNamespace] ?? null;
     }
 
     /**

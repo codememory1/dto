@@ -1,10 +1,10 @@
 <?php
 
-namespace Codememory\Dto\Constraints;
+namespace Codememory\Dto\Decorators;
 
-use Codememory\Dto\DataTransferControl;
-use Codememory\Dto\Interfaces\ConstraintHandlerInterface;
-use Codememory\Dto\Interfaces\ConstraintInterface;
+use Codememory\Dto\Interfaces\DecoratorHandlerInterface;
+use Codememory\Dto\Interfaces\DecoratorInterface;
+use Codememory\Dto\Interfaces\ExecutionContextInterface;
 use const ENT_DISALLOWED;
 use const ENT_HTML401;
 use const ENT_HTML5;
@@ -17,23 +17,29 @@ use function is_string;
 use const JSON_THROW_ON_ERROR;
 use JsonException;
 
-final class XSSHandler implements ConstraintHandlerInterface
+final class XSSHandler implements DecoratorHandlerInterface
 {
     /**
-     * @param XSS $constraint
+     * @param XSS $decorator
      */
-    public function handle(ConstraintInterface $constraint, DataTransferControl $dataTransferControl): void
+    public function handle(DecoratorInterface $decorator, ExecutionContextInterface $context): void
     {
-        $value = $dataTransferControl->getDataValue();
+        $dataValue = $context->getDataValue();
+        $validValue = null;
 
-        if (is_string($value)) {
-            if ($this->isJson($value)) {
-                $dataTransferControl->setValue(json_encode($this->arrayFilter(json_decode($value, true))));
+        if (is_string($dataValue)) {
+            if ($this->isJson($dataValue)) {
+                $validValue = json_encode($this->arrayFilter(json_decode($dataValue, true)));
             } else {
-                $dataTransferControl->setValue($this->filter($value));
+                $validValue = $this->filter($dataValue);
             }
-        } else if (is_array($value)) {
-            $dataTransferControl->setValue($this->arrayFilter($value));
+        } else if (is_array($dataValue)) {
+            $validValue = $this->arrayFilter($dataValue);
+        }
+
+        if (null !== $validValue) {
+            $context->setDataTransferObjectValue($validValue);
+            $context->setValueForHarvestableObject($validValue);
         }
     }
 

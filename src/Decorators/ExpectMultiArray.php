@@ -1,13 +1,16 @@
 <?php
 
-namespace Codememory\Dto\Constraints;
+namespace Codememory\Dto\Decorators;
 
 use Attribute;
-use Codememory\Dto\Interfaces\ConstraintInterface;
+use Codememory\Dto\Interfaces\DecoratorInterface;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class ExpectMultiArray implements ConstraintInterface
+final class ExpectMultiArray implements DecoratorInterface
 {
+    /**
+     * @param array<int, string> $expectKeys
+     */
     public function __construct(
         public readonly array $expectKeys,
         public readonly bool $itemKeyAsNumber = true

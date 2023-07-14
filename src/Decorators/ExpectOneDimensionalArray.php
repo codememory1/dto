@@ -1,13 +1,13 @@
 <?php
 
-namespace Codememory\Dto\Constraints;
+namespace Codememory\Dto\Decorators;
 
 use Attribute;
-use Codememory\Dto\Interfaces\ConstraintInterface;
+use Codememory\Dto\Interfaces\DecoratorInterface;
 use LogicException;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class ExpectOneDimensionalArray implements ConstraintInterface
+final class ExpectOneDimensionalArray implements DecoratorInterface
 {
     public const TYPES = [
         'integer', 'string', 'float', 'double', 'boolean'
