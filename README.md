@@ -9,9 +9,9 @@ $ composer require codememory/dto
 ### What will be covered in this documentation?
 * How to use DTO?
 * How to validate DTO with symfony/validator?
-* How to use constraints?
-* What is DataTransferControl in constraints?
-* How to create your own constraints?
+* How to use decorators?
+* What is Context in decorators?
+* How to create your own decorators?
 * What is a collector and how to create your own collector ?
 
 > [ ! ] Please note that in the DataTransfer, all properties that we process must have the access modifier _"public"_
@@ -21,12 +21,13 @@ $ composer require codememory/dto
 ```php
 <?php
 
-use Codememory\Dto\DataTransfer;
 use Codememory\Dto\Collectors\BaseCollector;
-use Codememory\Dto\Constraints as DtoConstraints;
-use Codememory\Dto\Registers\ConstraintHandlerRegister;
+use Codememory\Dto\Decorators as DD;
+use Codememory\Dto\Configuration;
 use Codememory\Reflection\ReflectorManager;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Codememory\Dto\AbstractDataTransferObject;
+use Codememory\Dto\Factory\ExecutionContextFactory;
 
 enum StatusEnum
 {
@@ -34,21 +35,22 @@ enum StatusEnum
     case NOT_ACTIVATED;
 }
 
-#[DtoConstraints\ToType]
-final class UserDto extends DataTransfer
+#[DD\ToType]
+final class UserDto extends AbstractDataTransferObject
 {
     public ?string $name = null;
     public ?string $surname = null;
     public ?int $age = null;
     
-    #[DtoConstraints\ToEnum]
+    #[DD\ToEnum]
     public ?StatusEnum $status = null;
 }
 
 $userDto = new UserDto(
     new BaseCollector(), 
-    new ReflectorManager(new FilesystemAdapter('dto', '/var/cache/codememory')), 
-    new ConstraintHandlerRegister()
+    new Configuration(),
+    new ExecutionContextFactory(),
+    new ReflectorManager(new FilesystemAdapter('dto', '/var/cache/codememory'))
 );
 
 // We start the assembly of DTO based on the transferred data
@@ -72,13 +74,15 @@ $userDto->collect([
 ```php
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Constraints as Assert;
-use Codememory\Dto\Registers\ConstraintHandlerRegister;
 use Codememory\Reflection\ReflectorManager;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Codememory\Dto\AbstractDataTransferObject;
+use Codememory\Dto\Configuration;
+use Codememory\Dto\Factory\ExecutionContextFactory;
 
-final ProductDto extends DataTransfer
+final ProductDto extends AbstractDataTransferObject
 {
-    #[DtoConstraints\ValidationConstraint([
+    #[DD\Validation([
         new Assert\NotBlank(message: 'Name is required'),
         new Assert\Length(max: 5, maxMessage: 'Name must not exceed 5 characters')
     ])]
@@ -88,8 +92,9 @@ final ProductDto extends DataTransfer
 
 $productDto = new ProductDto(
     new BaseCollector(),
-    new ReflectorManager(new FilesystemAdapter('dto', '/var/cache/codememory')),
-    new ConstraintHandlerRegister()
+    new Configuration()
+    new ExecutionContextFactory(),
+    new ReflectorManager(new FilesystemAdapter('dto', '/var/cache/codememory'))
 );
 
 $productDto->collect(['name' => 'Super name']);
@@ -106,78 +111,62 @@ foreach ($errors as $error) {
 }
 ```
 
-### Use constraints
+### Use decorators
 
-> There are 2 types of constraints, one points to the DTO class, the other to the DTO properties
+> There are 2 types of decorators, one points to the DTO class, the other to the DTO properties
 
-> The difference between the constraint which the class has is that the given constraint will be executed for all DTO properties and the given constraint will be executed first
+> The difference between the decorator which the class has is that the given decorator will be executed for all DTO properties and the given decorator will be executed first
 
 ```php
-use Codememory\Dto\Constraints as DtoConstraints
+use Codememory\Dto\Decorators as DD
 
-// Constraint for class
-#[DtoConstraints\ToType] // This constraint will cast all DTO properties to the type specified by the property
-final class OneDto extends DataTransfer 
+// Decorator for class
+#[DD\ToType] // This decorator will cast all DTO properties to the type specified by the property
+final class OneDto extends AbstractDataTransferObject 
 {
     public ?int $number = null;
     public array $list = [];
 }
 
-// Constrains for properties
-final class TestDto extends DataTransfer 
+// Decorators for properties
+final class TestDto extends AbstractDataTransferObject 
 {
-    #[DtoConstraints\NestedDTO(OneDto::class)]
+    #[DD\NestedDTO(OneDto::class)]
     public ?OneDto $one = null;
     
    
-    // Multiple constraints
-    // Priority works here, first ToEnumConstraint will be executed, and then IgnoreSetterCallConstraint
-    #[DtoConstraints\ToEnum]
-    #[DtoConstraints\IgnoreSetterCall]
+    // Multiple decorators
+    // Priority works here, first ToEnum will be executed, and then IgnoreSetterCallForHarvestableObject
+    #[DD\ToEnum]
+    #[DD\IgnoreSetterCallForHarvestableObject]
     public ?StatusEnum $status = null;
 }
 ```
 
-### List of constraints
-* __AsPatch__ - Calls a setter on the object being collected and invokes the following constraints on the given property, only if the request method is PATCH and a property key is passed to collect
-  * __$assert (default: [])__ - Array of validation rules if this property will be processed
+### List of decorators
+* __IgnoreSetterCallForHarvestableObject__ - Ignore the setter call on the harvestable object
 
 
-* __IgnoreSetterCall__ - Ignore the setter call on the collected object
+* __PrefixSetterMethodForHarvestableObject__ - Changes the prefix of the called method to set the value in the harvestable object
+  * __$prefix__ - Prefix name, for example "set"
+
+
+* __SetterMethodForHarvestableObject__ - Change the full name of the method through which it will be possible to set the value in the harvestable object
+    * __$name__ - Method name, for example "setName"
 
 
 * __NestedDTO__ - Nested DataTransfer, nest in DataTransfer property
     * __$dto__ - DataTransfer namespace
-    * __$object (default: null)__ - The namespace of the object to be collected. If the value is not passed, the property on which this constraint is attached will ignore the setter call on the collected object
+    * __$object (default: null)__ - The namespace of the object to be collected. If the value is not passed, the property on which this decorator is attached will ignore the setter call on the collected object
     * __$thenCallback (default: null)__ - The name of the callback method, which should return a bool value indicating whether it is worth checking out or not
-    * __$collector (default: Codememory\Dto\Collectors\BaseCollector)__ - The collector with which the nested DTO will be collected
-
-
-* __ToEntity__ - Translate value from collect data to doctrine entity (Requires registration)
-  * __$entity__ - Entity namespace, by default will be determined by property type
-  * __$byKey__ - The key by which to search for a record in the database
-  * __$whereCallback__ - The name of the method from DataTransfer that should return the array where
-      * __$value__ - Value from collect data
-      * __$dataTransferControl__ - API for managing logic
-  * __$entityNotFoundCallback (default: null)__ - Own handler, if the entity is not found, you need to specify the method name from DataTransfer
-    * __$value__ - Value from collect data
-    * __$dataTransferControl__ - API for managing logic
-
-
-* __ToEntityList__ - Convert array of values to array of entities
-    * __$entity__ - Entity namespace, by default will be determined by property type
-    * __$byKey__ - The key by which to search for a record in the database
-    * __$whereCallback__ - The name of the method from DataTransfer that should return the array where
-        * __$values__ - Array values
-        * __$dataTransferControl__ - API for managing logic
-    * __$unique (default: true)__ - Whether to pass input array through array_unique function
-    * __$valueConverterCallback (default: null)__ - The name of the method to convert the value of each iteration of the input array. The method must return a value
-        * __$value__ - The value of each iteration
-        * __$dataTransferControl__ - API for managing logic
 
 
 * __ToEnum__ - Translates a value from collect data to an enum object
   * __$byValue (default: false)__ - Search for case in Enum by its value, by default it searches by its name
+
+
+* __ToEnumList__ - Similar to the ToEnum decorator, except that this decorator expects an array and will try to convert each element of the value into an Enum
+    * __$unique (default: true)__ - This is a new argument that will filter the input array for uniqueness
 
 
 * __ToType__ - Converts a value from collect data to a specific type
@@ -204,60 +193,53 @@ final class TestDto extends DataTransfer
 * __ExpectOneDimensionalArray__ - Expects a one-dimensional array
   * __$types (default: any)__ - Array of skipped value types
 
-### Parsing DataTransferControl
-> This is an API class that comes inside a constraint to manage the state or values of the dto, the object being collected, and the value from collect data
-
-#### Properties:
-  * __$property__ - readonly ReflectionProperty - Current property being processed
-  * __$dataTransfer__ - readonly DataTransferInterface - Current DTO being processed
-  * __$data__ - readonly array - A copy of the data that was passed to collect data
-
+### Parsing Context
+> This is an API class that comes inside a decorator to manage the state or values of the dto, the object being collected, and the value from collect data
 
 #### Methods:
-  * __setDataTransferValue__ - Set value for DTO property
-  * __setObjectValue__ - Set a value for the setter of the collected object
-  * __setDataValue__ - Set the value that was passed to collect data
-  * __setSetterMethodNameToObject__ - Set the name of the setter method that will be called on the collected object
-  * __setIsIgnoreSetterCall__ - Set the setter call ignore status of the collected object
-  * __setIsSkipProperty__ - Set skip status of currently processed property in DataTransfer
-  * __setDataKey__ - Set a new value selection key from collect data - does not play a major role, intended for processing subsequent constraints
+  * __getDataTransferObject__ - Returns the current data transfer object that contains the property being processed.
+  * __getProperty__ - Returns the currently processed property.
+  * __getData__ - Returns the input data that will be used to collect the dto and the object.
+  * __getDataValue__ - Returns a value from data (which was passed during data transfer build).
+  * __getDataTransferObjectValue__ - Returns the value that was set to the data transfer property.
+  * __getValueForHarvestableObject__ - Returns the value that was set to the object being collected.
+  * __getDataKey__ - Returns a key that can be used to get a value from data.
+  * __getNameSetterMethodForHarvestableObject__ - Returns the name of the setter method for the object being collected.
+  * __isIgnoredSetterCallForHarvestableObject__ - Whether the setter method call on the harvestable object is ignored.
+  * __isSkippedThisProperty__ - Whether to skip processing the current property.
 
-#### DataTransfer Methods:
-  * __getReflectorManager__ - Returns the ReflectionManager
-  * __getReflector__ - Returns the ReflectorClass
-  * __getConstraintHandlerRegister__ - Returns the constraint logger
-  * __setObject__ - Set the object to be collected, if the object is not set, all processing associated with the object will not run and the DTO will work without the object
-  * __getObject__ - Get the collected object, must be called after the collect method
-  * __addDataTransferCollection__ - Add collection or array of collections with symfony validator constraints (assert)
-    * __$key__ - The key by which you can then get the collection itself with the rules for each property
-    * __$dataTransferCollection__ - Expects a Codememory\Dto\DataTransferCollection or an array of Codememory\Dto\DataTransferCollection. This collection is used to validate DTO properties
-  * __getListDataTransferCollection__ - Returns a list of collections
-  * __collect__ - Collects DTO and object (if one was passed)
+> Many of these methods have setters.
 
-### DataTransferCollection Methods
-  * __construct__
-    * __$dataTransfer__ - DTO
-    * __$propertyValidation__ - Validate properties of the DTO that was passed as the first argument. Scheme: [propertyName => [Symfony assert objects]]
-  * __getDataTransfer__ - Return $dataTransfer
-  * __getDataTransfer__ - Return $propertyValidation
-  * __addPropertyValidation__ - Add validation on a specific property
-    * __$propertyName__ - The name of the property to be validated
-    * __$constraints__ - An array of symfony assert objects or a specific symfony assert object
+#### DataTransferObject Methods:
+  * __getCollector__ - Returns the collector with which the dto will be collected
+  * __getConfiguration__ - Returns the dto configuration
+  * __getExecutionContextFactory__ - Returns the factory with which the decorator context was created
+  * __getReflectorManager__ - Returns the reflection manager, more details in the [codememory/reflection](https://github.com/codememory1/reflection) library
+  * __getClassReflector__ - Returns a reflection of the current dto
+  * __getHarvestableObject__ - Returns the collectable object
+  * __setHarvestableObject__ - Set build object
+  * __addDataTransferObjectPropertyConstraintsCollection__ - Add DTO Property Validation Collection
+  * __getListDataTransferObjectPropertyConstrainsCollection__ - Get a list of all dto property validation collections
+  * __getDataTransferObjectPropertyConstrainsCollection__ - Get collection validation property of specific dto
+  * __collect__ - Starts the entire build process
+  * __recollectHarvestableObject__ - Rebuilds the harvestable object into the new passed object
 
-### Creating your own constraint
+### Creating your own decorator
 
 ```php
 use Attribute;
-use Codememory\Dto\Interfaces\ConstraintInterface;
-use Codememory\Dto\Interfaces\ConstraintHandlerInterface;
-use Codememory\Dto\DataTransferControl;
-use Codememory\Dto\Registers\ConstraintHandlerRegister;
+use Codememory\Dto\Interfaces\DecoratorInterface;
+use Codememory\Dto\Interfaces\DecoratorHandlerInterface;
+use Codememory\Dto\Interfaces\ExecutionContextInterface;
 use Codememory\Reflection\ReflectorManager;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Codememory\Dto\Configuration;
+use Codememory\Dto\AbstractDataTransferObject;
+use Codememory\Dto\Factory\ExecutionContextFactory;
 
-// Let's create a constraint that will combine the value of all properties and separate it with a certain character
+// Let's create a decorator that will combine the value of all properties and separate it with a certain character
 #[Attribute(Attribute::TARGET_PROPERTY)] // Will only apply to properties
-final class PropertyConcatenationConstraint implements ConstraintInterface 
+final class PropertyConcatenation implements DecoratorInterface 
 {
     public function __construct(
         public readonly string $propertyNames,
@@ -266,53 +248,56 @@ final class PropertyConcatenationConstraint implements ConstraintInterface
     
     public function getHandler() : string
     {
-        return PropertyConcatenationConstraintHandler::class;
+        return PropertyConcatenationHandler::class;
     }
 }
 
-// Create constraint Handler
-final class PropertyConcatenationConstraintHandler implements ConstraintHandlerInterface 
+// Create decorator Handler
+final class PropertyConcatenationHandler implements DecoratorHandlerInterface 
 {
     /**
-     * @param PropertyConcatenationConstraint $constraint
+     * @param PropertyConcatenation $decorator
      */
-    public function handle(ConstraintInterface $constraint, DataTransferControl $dataTransferControl) : void
+    public function handle(ConstraintInterface $decorator, ExecutionContextInterface $context) : void
     {
         // Get the values of all passed properties
-        $assignedValues = array_map(static function (string $property) use ($dataTransferControl) {
-            return $dataTransferControl->dataTransfer->$property;
-        }, $constraint->propertyNames);
+        $assignedValues = array_map(static function (string $property) use ($context) {
+            return $context->getDataTransferObject()->$property;
+        }, $decorator->propertyNames);
         
         // Update the current value by concatenating multiple values separating them with $separator
-        $dataTransferControl->setValue(implode($constraint->separator, $assignedValues));
+        $context->setDataTransferObjectValue(implode($decorator->separator, $assignedValues));
+        $context->setValueForHarvestableObject($context->getDataTransferObject());
     }
 }
 
-// Now let's register our handler so that DataTransfer can receive it
-$constraintHandlerRegister = new ConstraintHandlerRegister();
-
-$constraintHandlerRegister->register(new PropertyConcatenationConstraintHandler());
-
-// Let's test our constraint
-final class TestDto extends DataTransfer
+// Let's test our decorator
+final class TestDto extends AbstractDataTransferObject
 {
     public ?string $name = null;
     public ?string $surname = null;
     
-    #[PropertyConcatenationConstraint(['name', 'surname'], '+')]
+    #[PropertyConcatenation(['name', 'surname'], '+')]
     public ?string $fullName = null;
 }
 
+// To register this decorator when you create a new instance by passing the configuration as the second argument to it, you must first register the decorator through this configuration
+
+$configuration = new Configuration();
+
+$configuration->registerDecoratorHandler(new PropertyConcatenationHandler());
+
 $testDto = new TestDto(
     new BaseCollector(),
-    new ReflectorManager(new FilesystemAdapter('dto', '/var/cache/codememory')),
-    $constraintHandlerRegister
+    $configuration,
+    new ExecutionContextFactory(),
+    new ReflectorManager(new FilesystemAdapter('dto', '/var/cache/codememory'))
 );
 
 $testDto->collect([
     'name' => 'Code',
     'surname' => 'Memory',
-    'full_name' => 'test_full_name' // Our constraint will override this value
+    'full_name' => 'test_full_name' // Our decorator will override this value
 ]);
 
 echo $testDto->fullName // Code+Memory
@@ -324,22 +309,21 @@ echo $testDto->fullName // Code+Memory
 
 ```php
 use Codememory\Dto\Interfaces\CollectorInterface;
-use Codememory\Dto\DataTransferControl;
-use Codememory\Dto\Interfaces\ConstraintInterface;
-use Codememory\Dto\Registers\ConstraintHandlerRegister;
+use Codememory\Dto\Interfaces\ExecutionContextInterface;
+use Codememory\Dto\Interfaces\DecoratorInterface;
 
 final class MyCollector implements CollectorInterface
 {
-    public function collect(DataTransferControl $dataTransferControl) : void
+    public function collect(ExecutionContextInterface $context) : void
     {
         // Here all processing begins on each property, this method is called every iteration of the properties
         
         // Example get property attributes
-        foreach ($dataTransferControl->property->getAttributes() as $attribute) {
+        foreach ($context->getProperty()->getAttributes() as $attribute) {
             $attributeInstance = $attribute->newInstance();
         
-            if ($attributeInstance instanceof ConstraintInterface) {
-                $constraintHandler = $dataTransferControl->dataTransfer->getConstraintHandlerRegister()->getHandler($attributeInstance->getHandler());
+            if ($attributeInstance instanceof DecoratorInterface) {
+                $decoratorHandler = $context->getDataTransferObject()->getConfiguration()->getDecoratorHandler($attributeInstance->getHandler());
                 
                 // ....
             }
