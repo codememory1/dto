@@ -13,6 +13,9 @@ $ composer require codememory/dto
 * What is Context in decorators?
 * How to create your own decorators?
 * What is a collector and how to create your own collector ?
+* How to create a context factory?
+* How to create your own key naming strategy?
+* How to create your own DTO property provider?
 
 > [ ! ] Please note that in the DataTransfer, all properties that we process must have the access modifier _"public"_
 
@@ -193,6 +196,19 @@ final class TestDto extends AbstractDataTransferObject
 * __ExpectOneDimensionalArray__ - Expects a one-dimensional array
   * __$types (default: any)__ - Array of skipped value types
 
+
+### List of data key naming strategies
+* __Codememory\Dto\DataKeyNamingStrategy\DataKeyNamingStrategyCamelCase__ - Translates property name to camelCase for lookup in data
+* __Codememory\Dto\DataKeyNamingStrategy\DataKeyNamingStrategySnakeCase__ - Translates property name to snake_case for lookup in data
+* __Codememory\Dto\DataKeyNamingStrategy\DataKeyNamingStrategyUpperCase__ - Translates property name to UPPER_CASE for lookup in data
+
+
+### List of property providers
+* __Codememory\Dto\Provider\DataTransferObjectPrivatePropertyProvider__ - Allows only private properties ignoring AbstractDataTransferObject properties
+* __Codememory\Dto\Provider\DataTransferObjectProtectedPropertyProvider__ - Allows only protected properties ignoring AbstractDataTransferObject properties
+* __Codememory\Dto\Provider\DataTransferObjectPublicPropertyProvider__ - Allows only public properties ignoring AbstractDataTransferObject properties
+
+
 ### Parsing Context
 > This is an API class that comes inside a decorator to manage the state or values of the dto, the object being collected, and the value from collect data
 
@@ -332,4 +348,86 @@ final class MyCollector implements CollectorInterface
         // ....
     }
 }
+```
+
+### How to create a context factory?
+
+```php
+use Codememory\Dto\Interfaces\ExecutionContextFactoryInterface;
+use Codememory\Dto\Interfaces\ExecutionContextInterface;
+use Codememory\Dto\Interfaces\DataTransferObjectInterface;
+use Codememory\Reflection\Reflectors\PropertyReflector;
+use Codememory\Dto\Interfaces\ExecutionContextInterface;
+
+// Create a context
+final class MyContext implements ExecutionContextInterface
+{
+    // Implementing Interface Methods...
+}
+
+// Creating a context factory
+final class MyContextFactory implements ExecutionContextFactoryInterface
+{
+    public function createExecutionContext(DataTransferObjectInterface $dataTransferObject, PropertyReflector $property, array $data) : ExecutionContextInterface
+    {
+        $context = new MyContext();
+        // ...
+        
+        return $context;
+    }
+}
+
+// When creating a DTO instance, we pass this context factory
+// Example:
+new MyDto(new BaseCollector(), new Configuration(), new MyContextFactory(), ...);
+```
+
+### How to create your own key naming strategy?
+
+> This strategy will look for values in data which was passed to collect as "_{dto property name}"
+
+```php
+use Codememory\Dto\Interfaces\DataKeyNamingStrategyInterface;
+use Codememory\Dto\Configuration;
+
+final class MyStrategyName implements DataKeyNamingStrategyInterface
+{
+    public function convert(string $propertyName) : string
+    {
+        return "_$propertyName";
+    }
+}
+
+// To use this strategy, you need to change the configuration
+$configuration = new Configuration();
+
+$configuration->setDataKeyNamingStrategy(new MyStrategyName());
+
+new MyDTO(new BaseCollector(), $configuration, ...);
+```
+
+### How to create your own DTO property provider?
+
+> The provider must return the dto properties that are allowed to be processed by the collector! Don't forget to ignore _**AbstractDataTransferObject**_ properties, otherwise these properties will be processed too
+
+```php
+use Codememory\Dto\Interfaces\DataTransferObjectPropertyProviderInterface;
+use Codememory\Reflection\Reflectors\ClassReflector;
+use Codememory\Dto\Configuration;
+
+// The provider will say that only private properties need to be processed
+final class MyPropertyProvider implements DataTransferObjectPropertyProviderInterface
+{
+    public function getProperties(ClassReflector $classReflector) : array
+    {
+        return $classReflector->getPrivateProperties();
+    }
+}
+
+// Change the provider in the configuration
+$configuration = new Configuration();
+
+$configuration->setDataTransferObjectPropertyProvider(new MyPropertyProvider());
+
+new MyDTO(new BaseCollector(), $configuration, ...);
 ```
