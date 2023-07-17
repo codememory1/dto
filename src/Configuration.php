@@ -23,7 +23,7 @@ class Configuration implements ConfigurationInterface
 
     public function getDataKeyNamingStrategy(): DataKeyNamingStrategyInterface
     {
-        return $this->dataKeyNamingStrategy ?: new DataKeyNamingStrategySnakeCase();
+        return $this->dataKeyNamingStrategy ?: $this->dataKeyNamingStrategy = new DataKeyNamingStrategySnakeCase();
     }
 
     public function setDataKeyNamingStrategy(DataKeyNamingStrategyInterface $strategy): ConfigurationInterface
@@ -35,7 +35,7 @@ class Configuration implements ConfigurationInterface
 
     public function getDataTransferObjectPropertyProvider(): DataTransferObjectPropertyProviderInterface
     {
-        return $this->dataTransferObjectPropertyProvider ?: new DataTransferObjectPublicPropertyProvider();
+        return $this->dataTransferObjectPropertyProvider ?: $this->dataTransferObjectPropertyProvider = new DataTransferObjectPublicPropertyProvider();
     }
 
     public function setDataTransferObjectPropertyProvider(DataTransferObjectPropertyProviderInterface $provider): self
