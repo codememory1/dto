@@ -4,6 +4,7 @@ namespace Codememory\Dto;
 
 use Codememory\Dto\Collection\DataTransferObjectPropertyConstraintsCollection;
 use Codememory\Dto\Interfaces\CollectorInterface;
+use Codememory\Dto\Interfaces\ConfigurationFactoryInterface;
 use Codememory\Dto\Interfaces\ConfigurationInterface;
 use Codememory\Dto\Interfaces\DataTransferObjectInterface;
 use Codememory\Dto\Interfaces\ExecutionContextFactoryInterface;
@@ -23,21 +24,28 @@ use ReflectionException;
 abstract class AbstractDataTransferObject implements DataTransferObjectInterface
 {
     protected array $_collectedDataForHarvestableObject = [];
+    private readonly ConfigurationInterface $_configuration;
     private ?object $harvestableObject = null;
     private ?ClassReflector $classReflector = null;
     private array $listDataTransferObjectPropertyConstrainsCollection = [];
 
     public function __construct(
         protected readonly CollectorInterface $_collector,
-        protected readonly ConfigurationInterface $_configuration,
+        protected readonly ConfigurationFactoryInterface $_configurationFactory,
         protected readonly ExecutionContextFactoryInterface $_executionContextFactory,
         protected readonly ReflectorManager $_reflectorManager
     ) {
+        $this->_configuration = $this->_configurationFactory->createConfiguration();
     }
 
     public function getCollector(): CollectorInterface
     {
         return $this->_collector;
+    }
+
+    public function getConfigurationFactory(): ConfigurationFactoryInterface
+    {
+        return $this->_configurationFactory;
     }
 
     public function getConfiguration(): ConfigurationInterface
@@ -117,10 +125,6 @@ abstract class AbstractDataTransferObject implements DataTransferObjectInterface
                 $context = $this->_executionContextFactory->createExecutionContext($this, $property, $data);
 
                 $this->propertyHandler($context);
-
-                if ($context->isSkippedThisProperty()) {
-                    break;
-                }
             }
         }
 

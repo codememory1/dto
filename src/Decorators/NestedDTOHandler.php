@@ -50,7 +50,7 @@ final class NestedDTOHandler implements DecoratorHandlerInterface
         $currentDto = $context->getDataTransferObject();
         $nestedDto = new ($decorator->dto)(
             $currentDto->getCollector(),
-            $currentDto->getConfiguration(),
+            $currentDto->getConfigurationFactory()->createConfiguration(),
             $currentDto->getExecutionContextFactory(),
             $currentDto->getReflectorManager()
         );
