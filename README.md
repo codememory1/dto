@@ -26,7 +26,7 @@ $ composer require codememory/dto
 
 use Codememory\Dto\Collectors\BaseCollector;
 use Codememory\Dto\Decorators as DD;
-use Codememory\Dto\Configuration;
+use Codememory\Dto\Factory\ConfigurationFactory;
 use Codememory\Reflection\ReflectorManager;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Codememory\Dto\AbstractDataTransferObject;
@@ -51,7 +51,7 @@ final class UserDto extends AbstractDataTransferObject
 
 $userDto = new UserDto(
     new BaseCollector(), 
-    new Configuration(),
+    new ConfigurationFactory(),
     new ExecutionContextFactory(),
     new ReflectorManager(new FilesystemAdapter('dto', '/var/cache/codememory'))
 );
@@ -80,7 +80,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Codememory\Reflection\ReflectorManager;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Codememory\Dto\AbstractDataTransferObject;
-use Codememory\Dto\Configuration;
+use Codememory\Dto\Factory\ConfigurationFactory;
 use Codememory\Dto\Factory\ExecutionContextFactory;
 
 final ProductDto extends AbstractDataTransferObject
@@ -95,7 +95,7 @@ final ProductDto extends AbstractDataTransferObject
 
 $productDto = new ProductDto(
     new BaseCollector(),
-    new Configuration()
+    new ConfigurationFactory()
     new ExecutionContextFactory(),
     new ReflectorManager(new FilesystemAdapter('dto', '/var/cache/codememory'))
 );
@@ -249,9 +249,9 @@ use Codememory\Dto\Interfaces\DecoratorHandlerInterface;
 use Codememory\Dto\Interfaces\ExecutionContextInterface;
 use Codememory\Reflection\ReflectorManager;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
-use Codememory\Dto\Configuration;
 use Codememory\Dto\AbstractDataTransferObject;
 use Codememory\Dto\Factory\ExecutionContextFactory;
+use Codememory\Dto\Factory\ConfigurationFactory;
 
 // Let's create a decorator that will combine the value of all properties and separate it with a certain character
 #[Attribute(Attribute::TARGET_PROPERTY)] // Will only apply to properties
@@ -297,18 +297,15 @@ final class TestDto extends AbstractDataTransferObject
     public ?string $fullName = null;
 }
 
-// To register this decorator when you create a new instance by passing the configuration as the second argument to it, you must first register the decorator through this configuration
-
-$configuration = new Configuration();
-
-$configuration->registerDecoratorHandler(new PropertyConcatenationHandler());
-
 $testDto = new TestDto(
     new BaseCollector(),
-    $configuration,
+    new ConfigurationFactory(),
     new ExecutionContextFactory(),
     new ReflectorManager(new FilesystemAdapter('dto', '/var/cache/codememory'))
 );
+
+// To register this decorator when you create a new instance by passing the configuration as the second argument to it, you must first register the decorator through this configuration
+$testDto->getConfiguration()->registerDecoratorHandler(new PropertyConcatenationHandler());
 
 $testDto->collect([
     'name' => 'Code',
@@ -358,6 +355,7 @@ use Codememory\Dto\Interfaces\ExecutionContextInterface;
 use Codememory\Dto\Interfaces\DataTransferObjectInterface;
 use Codememory\Reflection\Reflectors\PropertyReflector;
 use Codememory\Dto\Interfaces\ExecutionContextInterface;
+use Codememory\Dto\Factory\ConfigurationFactory;
 
 // Create a context
 final class MyContext implements ExecutionContextInterface
@@ -379,7 +377,7 @@ final class MyContextFactory implements ExecutionContextFactoryInterface
 
 // When creating a DTO instance, we pass this context factory
 // Example:
-new MyDto(new BaseCollector(), new Configuration(), new MyContextFactory(), ...);
+new MyDto(new BaseCollector(), new ConfigurationFactory(), new MyContextFactory(), ...);
 ```
 
 ### How to create your own key naming strategy?
@@ -388,22 +386,36 @@ new MyDto(new BaseCollector(), new Configuration(), new MyContextFactory(), ...)
 
 ```php
 use Codememory\Dto\Interfaces\DataKeyNamingStrategyInterface;
-use Codememory\Dto\Configuration;
+use Codememory\Dto\Factory\ConfigurationFactory;
 
 final class MyStrategyName implements DataKeyNamingStrategyInterface
 {
+    private ?\Closure $extension = null;
+
     public function convert(string $propertyName) : string
     {
-        return "_$propertyName";
+        $name =  "_$propertyName";
+        
+        if (null !== $this->extension) {
+            return call_user_func($this->extension, $name);
+        }
+        
+        return $name;
+    }
+    
+    // With this method, you need to give the opportunity to extend the convert method
+    public function setExtension(callable $callback) : DataTransferObjectPropertyProviderInterface
+    {
+        $this->extension = $callback;
+        
+        return $this;
     }
 }
 
+$myDto = new MyDTO(new BaseCollector(), new ConfigurationFactory(), ...);
+
 // To use this strategy, you need to change the configuration
-$configuration = new Configuration();
-
-$configuration->setDataKeyNamingStrategy(new MyStrategyName());
-
-new MyDTO(new BaseCollector(), $configuration, ...);
+$myDto->getConfiguration()->setDataKeyNamingStrategy(new MyStrategyName());
 ```
 
 ### How to create your own DTO property provider?
@@ -413,21 +425,35 @@ new MyDTO(new BaseCollector(), $configuration, ...);
 ```php
 use Codememory\Dto\Interfaces\DataTransferObjectPropertyProviderInterface;
 use Codememory\Reflection\Reflectors\ClassReflector;
-use Codememory\Dto\Configuration;
+use Codememory\Dto\Factory\ConfigurationFactory;
 
 // The provider will say that only private properties need to be processed
 final class MyPropertyProvider implements DataTransferObjectPropertyProviderInterface
 {
+    private ?\Closure $extension = null;
+
     public function getProperties(ClassReflector $classReflector) : array
     {
-        return $classReflector->getPrivateProperties();
+        $properties = $classReflector->getPrivateProperties();
+        
+        if (null !== $this->extension) {
+            return call_user_func($this->extension, $properties);
+        }
+        
+        return $properties;
+    }
+    
+    // With this method, you need to give the opportunity to extend the getProperties method
+    public function setExtension(callable $callback) : DataTransferObjectPropertyProviderInterface
+    {
+        $this->extension = $callback;
+        
+        return $this;
     }
 }
 
+$myDto = new MyDTO(new BaseCollector(), new ConfigurationFactory(), ...);
+
 // Change the provider in the configuration
-$configuration = new Configuration();
-
-$configuration->setDataTransferObjectPropertyProvider(new MyPropertyProvider());
-
-new MyDTO(new BaseCollector(), $configuration, ...);
+$myDto->getConfiguration()->setDataTransferObjectPropertyProvider(new MyPropertyProvider());
 ```
