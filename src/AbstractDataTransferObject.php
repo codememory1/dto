@@ -4,6 +4,7 @@ namespace Codememory\Dto;
 
 use Codememory\Dto\Collection\DataTransferObjectPropertyConstraintsCollection;
 use Codememory\Dto\Interfaces\CollectorInterface;
+use Codememory\Dto\Interfaces\ConfigurationFactoryInterface;
 use Codememory\Dto\Interfaces\ConfigurationInterface;
 use Codememory\Dto\Interfaces\DataTransferObjectInterface;
 use Codememory\Dto\Interfaces\DecoratorHandlerRegistrarInterface;
@@ -23,23 +24,35 @@ use ReflectionException;
 #[Collection('getListDataTransferObjectPropertyConstrainsCollection')]
 abstract class AbstractDataTransferObject implements DataTransferObjectInterface
 {
+    protected ConfigurationInterface $_configuration;
     protected array $_collectedDataForHarvestableObject = [];
-    private ?object $_harvestableObject = null;
-    private ?ClassReflector $_classReflector = null;
-    private array $_listDataTransferObjectPropertyConstrainsCollection = [];
+    protected ?object $_harvestableObject = null;
+    protected ClassReflector $_classReflector;
+    protected array $_listDataTransferObjectPropertyConstrainsCollection = [];
 
+    /**
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
     public function __construct(
         protected readonly CollectorInterface $_collector,
-        protected readonly ConfigurationInterface $_configuration,
+        protected readonly ConfigurationFactoryInterface $_configurationFactory,
         protected readonly ExecutionContextFactoryInterface $_executionContextFactory,
         protected readonly DecoratorHandlerRegistrarInterface $_decoratorHandlerRegistrar,
         protected readonly ReflectorManager $_reflectorManager
     ) {
+        $this->_configuration = $this->_configurationFactory->createConfiguration();
+        $this->_classReflector = $this->_reflectorManager->getReflector(static::class);
     }
 
     public function getCollector(): CollectorInterface
     {
         return $this->_collector;
+    }
+
+    public function getConfigurationFactory(): ConfigurationFactoryInterface
+    {
+        return $this->_configurationFactory;
     }
 
     public function getConfiguration(): ConfigurationInterface
@@ -62,13 +75,9 @@ abstract class AbstractDataTransferObject implements DataTransferObjectInterface
         return $this->_reflectorManager;
     }
 
-    /**
-     * @throws ReflectionException
-     * @throws InvalidArgumentException
-     */
     public function getClassReflector(): ClassReflector
     {
-        return $this->_classReflector ?: $this->_classReflector = $this->_reflectorManager->getReflector(static::class);
+        return $this->_classReflector;
     }
 
     /**
@@ -111,10 +120,6 @@ abstract class AbstractDataTransferObject implements DataTransferObjectInterface
         return $this->listDataTransferObjectPropertyConstrainsCollection[$dataTransferObjectNamespace] ?? null;
     }
 
-    /**
-     * @throws ReflectionException
-     * @throws InvalidArgumentException
-     */
     public function collect(array $data): self
     {
         $properties = $this->getConfiguration()->getDataTransferObjectPropertyProvider()->getProperties($this->getClassReflector());
