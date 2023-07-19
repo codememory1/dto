@@ -26,7 +26,8 @@ $ composer require codememory/dto
 
 use Codememory\Dto\Collectors\BaseCollector;
 use Codememory\Dto\Decorators as DD;
-use Codememory\Dto\Factory\ConfigurationFactory;
+use Codememory\Dto\Configuration;
+use Codememory\Dto\DecoratorHandlerRegistrar;
 use Codememory\Reflection\ReflectorManager;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Codememory\Dto\AbstractDataTransferObject;
@@ -51,8 +52,9 @@ final class UserDto extends AbstractDataTransferObject
 
 $userDto = new UserDto(
     new BaseCollector(), 
-    new ConfigurationFactory(),
+    new Configuration(),
     new ExecutionContextFactory(),
+    new DecoratorHandlerRegistrar(),
     new ReflectorManager(new FilesystemAdapter('dto', '/var/cache/codememory'))
 );
 
@@ -80,7 +82,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Codememory\Reflection\ReflectorManager;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Codememory\Dto\AbstractDataTransferObject;
-use Codememory\Dto\Factory\ConfigurationFactory;
+use Codememory\Dto\Configuration;
+use Codememory\Dto\DecoratorHandlerRegistrar;
 use Codememory\Dto\Factory\ExecutionContextFactory;
 
 final ProductDto extends AbstractDataTransferObject
@@ -95,8 +98,9 @@ final ProductDto extends AbstractDataTransferObject
 
 $productDto = new ProductDto(
     new BaseCollector(),
-    new ConfigurationFactory()
+    new Configuration()
     new ExecutionContextFactory(),
+    new DecoratorHandlerRegistrar(),
     new ReflectorManager(new FilesystemAdapter('dto', '/var/cache/codememory'))
 );
 
@@ -107,7 +111,7 @@ $validator = Validation::createValidatorBuilder()
     ->enableAnnotationMapping()
     ->getValidator();
 
-$errors = $validator->validate();
+$errors = $validator->validate($productDto);
 
 foreach ($errors as $error) {
     echo $error->getMessage(); // Name must not exceed 5 characters
@@ -251,7 +255,8 @@ use Codememory\Reflection\ReflectorManager;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Codememory\Dto\AbstractDataTransferObject;
 use Codememory\Dto\Factory\ExecutionContextFactory;
-use Codememory\Dto\Factory\ConfigurationFactory;
+use Codememory\Dto\Configuration;
+use Codememory\Dto\DecoratorHandlerRegistrar;
 
 // Let's create a decorator that will combine the value of all properties and separate it with a certain character
 #[Attribute(Attribute::TARGET_PROPERTY)] // Will only apply to properties
@@ -299,13 +304,14 @@ final class TestDto extends AbstractDataTransferObject
 
 $testDto = new TestDto(
     new BaseCollector(),
-    new ConfigurationFactory(),
+    new Configuration(),
     new ExecutionContextFactory(),
+    new DecoratorHandlerRegistrar(),
     new ReflectorManager(new FilesystemAdapter('dto', '/var/cache/codememory'))
 );
 
 // To register this decorator when you create a new instance by passing the configuration as the second argument to it, you must first register the decorator through this configuration
-$testDto->getConfiguration()->registerDecoratorHandler(new PropertyConcatenationHandler());
+$testDto->getDecoratorHandlerRegistrar()->register(new PropertyConcatenationHandler());
 
 $testDto->collect([
     'name' => 'Code',
@@ -336,7 +342,7 @@ final class MyCollector implements CollectorInterface
             $attributeInstance = $attribute->newInstance();
         
             if ($attributeInstance instanceof DecoratorInterface) {
-                $decoratorHandler = $context->getDataTransferObject()->getConfiguration()->getDecoratorHandler($attributeInstance->getHandler());
+                $decoratorHandler = $context->getDataTransferObject()->getDecoratorHandlerRegistrar()->getHandler($attributeInstance->getHandler());
                 
                 // ....
             }
@@ -355,7 +361,7 @@ use Codememory\Dto\Interfaces\ExecutionContextInterface;
 use Codememory\Dto\Interfaces\DataTransferObjectInterface;
 use Codememory\Reflection\Reflectors\PropertyReflector;
 use Codememory\Dto\Interfaces\ExecutionContextInterface;
-use Codememory\Dto\Factory\ConfigurationFactory;
+use Codememory\Dto\Configuration;
 
 // Create a context
 final class MyContext implements ExecutionContextInterface
@@ -377,7 +383,7 @@ final class MyContextFactory implements ExecutionContextFactoryInterface
 
 // When creating a DTO instance, we pass this context factory
 // Example:
-new MyDto(new BaseCollector(), new ConfigurationFactory(), new MyContextFactory(), ...);
+new MyDto(new BaseCollector(), new Configuration(), new MyContextFactory(), ...);
 ```
 
 ### How to create your own key naming strategy?
@@ -386,7 +392,7 @@ new MyDto(new BaseCollector(), new ConfigurationFactory(), new MyContextFactory(
 
 ```php
 use Codememory\Dto\Interfaces\DataKeyNamingStrategyInterface;
-use Codememory\Dto\Factory\ConfigurationFactory;
+use Codememory\Dto\Configuration;
 
 final class MyStrategyName implements DataKeyNamingStrategyInterface
 {
@@ -412,7 +418,7 @@ final class MyStrategyName implements DataKeyNamingStrategyInterface
     }
 }
 
-$myDto = new MyDTO(new BaseCollector(), new ConfigurationFactory(), ...);
+$myDto = new MyDTO(new BaseCollector(), new Configuration(), ...);
 
 // To use this strategy, you need to change the configuration
 $myDto->getConfiguration()->setDataKeyNamingStrategy(new MyStrategyName());
@@ -425,7 +431,7 @@ $myDto->getConfiguration()->setDataKeyNamingStrategy(new MyStrategyName());
 ```php
 use Codememory\Dto\Interfaces\DataTransferObjectPropertyProviderInterface;
 use Codememory\Reflection\Reflectors\ClassReflector;
-use Codememory\Dto\Factory\ConfigurationFactory;
+use Codememory\Dto\Configuration;
 
 // The provider will say that only private properties need to be processed
 final class MyPropertyProvider implements DataTransferObjectPropertyProviderInterface
@@ -452,7 +458,7 @@ final class MyPropertyProvider implements DataTransferObjectPropertyProviderInte
     }
 }
 
-$myDto = new MyDTO(new BaseCollector(), new ConfigurationFactory(), ...);
+$myDto = new MyDTO(new BaseCollector(), new Configuration(), ...);
 
 // Change the provider in the configuration
 $myDto->getConfiguration()->setDataTransferObjectPropertyProvider(new MyPropertyProvider());

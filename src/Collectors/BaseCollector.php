@@ -50,8 +50,8 @@ final class BaseCollector implements CollectorInterface
         }
 
         $context->getDataTransferObject()
-            ->getConfiguration()
-            ->getDecoratorHandler($decorator->getHandler())
+            ->getDecoratorHandlerRegistrar()
+            ->getHandler($decorator->getHandler())
             ->handle($decorator, $context);
     }
 }
