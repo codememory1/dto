@@ -4,9 +4,9 @@ namespace Codememory\Dto;
 
 use Codememory\Dto\Collection\DataTransferObjectPropertyConstraintsCollection;
 use Codememory\Dto\Interfaces\CollectorInterface;
-use Codememory\Dto\Interfaces\ConfigurationFactoryInterface;
 use Codememory\Dto\Interfaces\ConfigurationInterface;
 use Codememory\Dto\Interfaces\DataTransferObjectInterface;
+use Codememory\Dto\Interfaces\DecoratorHandlerRegistrarInterface;
 use Codememory\Dto\Interfaces\ExecutionContextFactoryInterface;
 use Codememory\Dto\Interfaces\ExecutionContextInterface;
 use Codememory\Dto\Validator\Constraints\Collection;
@@ -24,28 +24,22 @@ use ReflectionException;
 abstract class AbstractDataTransferObject implements DataTransferObjectInterface
 {
     protected array $_collectedDataForHarvestableObject = [];
-    private readonly ConfigurationInterface $_configuration;
-    private ?object $harvestableObject = null;
-    private ?ClassReflector $classReflector = null;
-    private array $listDataTransferObjectPropertyConstrainsCollection = [];
+    private ?object $_harvestableObject = null;
+    private ?ClassReflector $_classReflector = null;
+    private array $_listDataTransferObjectPropertyConstrainsCollection = [];
 
     public function __construct(
         protected readonly CollectorInterface $_collector,
-        protected readonly ConfigurationFactoryInterface $_configurationFactory,
+        protected readonly ConfigurationInterface $_configuration,
         protected readonly ExecutionContextFactoryInterface $_executionContextFactory,
+        protected readonly DecoratorHandlerRegistrarInterface $_decoratorHandlerRegistrar,
         protected readonly ReflectorManager $_reflectorManager
     ) {
-        $this->_configuration = $this->_configurationFactory->createConfiguration();
     }
 
     public function getCollector(): CollectorInterface
     {
         return $this->_collector;
-    }
-
-    public function getConfigurationFactory(): ConfigurationFactoryInterface
-    {
-        return $this->_configurationFactory;
     }
 
     public function getConfiguration(): ConfigurationInterface
@@ -56,6 +50,11 @@ abstract class AbstractDataTransferObject implements DataTransferObjectInterface
     public function getExecutionContextFactory(): ExecutionContextFactoryInterface
     {
         return $this->_executionContextFactory;
+    }
+
+    public function getDecoratorHandlerRegistrar(): DecoratorHandlerRegistrarInterface
+    {
+        return $this->_decoratorHandlerRegistrar;
     }
 
     public function getReflectorManager(): ReflectorManager
@@ -69,7 +68,7 @@ abstract class AbstractDataTransferObject implements DataTransferObjectInterface
      */
     public function getClassReflector(): ClassReflector
     {
-        return $this->classReflector ?: $this->classReflector = $this->_reflectorManager->getReflector(static::class);
+        return $this->_classReflector ?: $this->_classReflector = $this->_reflectorManager->getReflector(static::class);
     }
 
     /**
@@ -77,12 +76,12 @@ abstract class AbstractDataTransferObject implements DataTransferObjectInterface
      */
     public function getHarvestableObject(): ?object
     {
-        return $this->harvestableObject;
+        return $this->_harvestableObject;
     }
 
     public function setHarvestableObject(object $object): self
     {
-        $this->harvestableObject = $object;
+        $this->_harvestableObject = $object;
 
         return $this;
     }
@@ -92,11 +91,11 @@ abstract class AbstractDataTransferObject implements DataTransferObjectInterface
         if (is_array($dataTransferObjectPropertyConstraintsCollection)) {
             foreach ($dataTransferObjectPropertyConstraintsCollection as $dataTransferObjectNamespace => $collection) {
                 if ($collection instanceof DataTransferObjectPropertyConstraintsCollection) {
-                    $this->listDataTransferObjectPropertyConstrainsCollection[$dataTransferObjectNamespace] = $collection;
+                    $this->_listDataTransferObjectPropertyConstrainsCollection[$dataTransferObjectNamespace] = $collection;
                 }
             }
         } else {
-            $this->listDataTransferObjectPropertyConstrainsCollection[$dataTransferObject::class] = $dataTransferObjectPropertyConstraintsCollection;
+            $this->_listDataTransferObjectPropertyConstrainsCollection[$dataTransferObject::class] = $dataTransferObjectPropertyConstraintsCollection;
         }
 
         return $this;
@@ -104,7 +103,7 @@ abstract class AbstractDataTransferObject implements DataTransferObjectInterface
 
     public function getListDataTransferObjectPropertyConstrainsCollection(): array
     {
-        return $this->listDataTransferObjectPropertyConstrainsCollection;
+        return $this->_listDataTransferObjectPropertyConstrainsCollection;
     }
 
     public function getDataTransferObjectPropertyConstrainsCollection(string $dataTransferObjectNamespace): ?DataTransferObjectPropertyConstraintsCollection

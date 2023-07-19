@@ -10,11 +10,11 @@ interface DataTransferObjectInterface
 {
     public function getCollector(): CollectorInterface;
 
-    public function getConfigurationFactory(): ConfigurationFactoryInterface;
-
     public function getConfiguration(): ConfigurationInterface;
 
     public function getExecutionContextFactory(): ExecutionContextFactoryInterface;
+
+    public function getDecoratorHandlerRegistrar(): DecoratorHandlerRegistrarInterface;
 
     public function getReflectorManager(): ReflectorManager;
 
