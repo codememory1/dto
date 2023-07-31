@@ -28,7 +28,7 @@ final class XSSHandler implements ConstraintHandlerInterface
 
         if (is_string($value)) {
             if ($this->isJson($value)) {
-                $dataTransferControl->setValue(json_encode($this->arrayFilter(json_decode($value, true) ?: [])));
+                $dataTransferControl->setValue(json_encode($this->arrayFilter(json_decode($value, true))));
             } else {
                 $dataTransferControl->setValue($this->filter($value));
             }
@@ -39,9 +39,11 @@ final class XSSHandler implements ConstraintHandlerInterface
 
     private function isJson(string $value): bool
     {
-        json_decode($value);
-
-        return json_last_error() === JSON_ERROR_NONE;
+        try {
+            return is_array(json_decode($value, true, flags: JSON_THROW_ON_ERROR));
+        } catch (JsonException) {
+            return false;
+        }
     }
 
     private function filter(string $value): string
