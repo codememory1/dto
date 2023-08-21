@@ -70,7 +70,7 @@ final class ToTypeHandler implements DecoratorHandlerInterface
 
         $value = json_decode($value, true);
 
-        if (empty($value) || JSON_ERROR_NONE !== json_last_error()) {
+        if (empty($value) || JSON_ERROR_NONE !== json_last_error() || !is_array($value)) {
             return [];
         }
 
