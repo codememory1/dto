@@ -5,6 +5,7 @@ namespace Codememory\Dto\Interfaces;
 use Codememory\Dto\Collection\DataTransferObjectPropertyConstraintsCollection;
 use Codememory\Reflection\ReflectorManager;
 use Codememory\Reflection\Reflectors\ClassReflector;
+use Symfony\Component\Validator\Constraint;
 
 interface DataTransferObjectInterface
 {
@@ -36,7 +37,12 @@ interface DataTransferObjectInterface
      */
     public function getListDataTransferObjectPropertyConstrainsCollection(): array;
 
-    public function getDataTransferObjectPropertyConstrainsCollection(string $dataTransferObjectNamespace): ?DataTransferObjectPropertyConstraintsCollection;
+    public function getDataTransferObjectPropertyConstrainsCollection(self $dataTransferObject): ?DataTransferObjectPropertyConstraintsCollection;
+
+    /**
+     * @param array<int, Constraint>  $constraints
+     */
+    public function addPropertyConstraints(DataTransferObjectInterface $dataTransferObject, string $propertyName, array $constraints): self;
 
     public function collect(array $data): self;
 

@@ -11,6 +11,7 @@ use Codememory\Dto\Interfaces\DecoratorHandlerRegistrarInterface;
 use Codememory\Dto\Interfaces\ExecutionContextFactoryInterface;
 use Codememory\Dto\Interfaces\ExecutionContextInterface;
 use Codememory\Dto\Validator\Constraints\Collection;
+use Codememory\Dto\ValueObject\DataTransferObjectPropertyConstraints;
 use Codememory\Reflection\ReflectorManager;
 use Codememory\Reflection\Reflectors\ClassReflector;
 use Codememory\Reflection\Reflectors\PropertyReflector;
@@ -115,9 +116,26 @@ abstract class AbstractDataTransferObject implements DataTransferObjectInterface
         return $this->_listDataTransferObjectPropertyConstrainsCollection;
     }
 
-    public function getDataTransferObjectPropertyConstrainsCollection(string $dataTransferObjectNamespace): ?DataTransferObjectPropertyConstraintsCollection
+    public function getDataTransferObjectPropertyConstrainsCollection(DataTransferObjectInterface $dataTransferObject): ?DataTransferObjectPropertyConstraintsCollection
     {
-        return $this->listDataTransferObjectPropertyConstrainsCollection[$dataTransferObjectNamespace] ?? null;
+        return $this->listDataTransferObjectPropertyConstrainsCollection[$dataTransferObject::class] ?? null;
+    }
+
+    public function addPropertyConstraints(DataTransferObjectInterface $dataTransferObject, string $propertyName, array $constraints): self
+    {
+        $collection = $this->getDataTransferObjectPropertyConstrainsCollection($dataTransferObject);
+
+        if (null !== $collection) {
+            $collection->addDataTransferObjectPropertyConstraints($propertyName, $constraints);
+        } else {
+            $collection = new DataTransferObjectPropertyConstraintsCollection($dataTransferObject, [
+                new DataTransferObjectPropertyConstraints($propertyName, $constraints)
+            ]);
+
+            $this->addDataTransferObjectPropertyConstraintsCollection($dataTransferObject, $collection);
+        }
+
+        return $this;
     }
 
     public function collect(array $data): self
