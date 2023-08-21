@@ -46,9 +46,7 @@ final class XSSHandler implements DecoratorHandlerInterface
     private function isJson(string $value): bool
     {
         try {
-            json_decode($value, flags: JSON_THROW_ON_ERROR);
-
-            return true;
+            return is_array(json_decode($value, true, flags: JSON_THROW_ON_ERROR));
         } catch (JsonException) {
             return false;
         }
