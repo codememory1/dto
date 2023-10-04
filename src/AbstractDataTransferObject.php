@@ -118,7 +118,7 @@ abstract class AbstractDataTransferObject implements DataTransferObjectInterface
 
     public function getDataTransferObjectPropertyConstrainsCollection(DataTransferObjectInterface $dataTransferObject): ?DataTransferObjectPropertyConstraintsCollection
     {
-        return $this->listDataTransferObjectPropertyConstrainsCollection[$dataTransferObject::class] ?? null;
+        return $this->_listDataTransferObjectPropertyConstrainsCollection[$dataTransferObject::class] ?? null;
     }
 
     public function addPropertyConstraints(DataTransferObjectInterface $dataTransferObject, string $propertyName, array $constraints): self

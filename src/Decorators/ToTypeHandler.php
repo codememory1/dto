@@ -22,7 +22,7 @@ final class ToTypeHandler implements DecoratorHandlerInterface
         $property = $context->getProperty();
         $value = $context->getDataValue();
 
-        if ((null === $value || 1 === preg_match('/^\s*$/', $value)) && $property->getType()->allowNullable()) {
+        if (null === $value || (is_string($value) && 1 === preg_match('/^\s*$/', $value)) && $property->getType()->allowNullable()) {
             $this->setValue($decorator, $context, null);
         } else {
             if ($this->isType($decorator, $property, 'string')) {
