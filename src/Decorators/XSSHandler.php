@@ -24,7 +24,7 @@ final class XSSHandler implements DecoratorHandlerInterface
      */
     public function handle(DecoratorInterface $decorator, ExecutionContextInterface $context): void
     {
-        $dataValue = $context->getDataValue();
+        $dataValue = $context->getDataTransferObjectValue();
         $validValue = null;
 
         if (is_string($dataValue)) {

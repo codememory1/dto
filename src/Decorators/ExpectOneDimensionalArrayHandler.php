@@ -17,8 +17,8 @@ final class ExpectOneDimensionalArrayHandler implements DecoratorHandlerInterfac
     {
         $values = [];
 
-        if (is_array($context->getDataValue())) {
-            foreach ($context->getDataValue() as $value) {
+        if (is_array($context->getDataTransferObjectValue())) {
+            foreach ($context->getDataTransferObjectValue() as $value) {
                 if (!is_array($value) && ([] === $decorator->types || in_array(gettype($value), $decorator->types, true))) {
                     $values[] = $value;
                 }

@@ -16,8 +16,8 @@ final class ExpectMultiArrayHandler implements DecoratorHandlerInterface
     {
         $values = [];
 
-        if (is_array($context->getDataValue())) {
-            foreach ($context->getDataValue() as $index => $item) {
+        if (is_array($context->getDataTransferObjectValue())) {
+            foreach ($context->getDataTransferObjectValue() as $index => $item) {
                 if (is_array($item)) {
                     $newItem = [];
 
