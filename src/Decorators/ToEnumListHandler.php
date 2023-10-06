@@ -16,7 +16,7 @@ final class ToEnumListHandler implements DecoratorHandlerInterface
     public function handle(DecoratorInterface $decorator, ExecutionContextInterface $context): void
     {
         $values = [];
-        $dataValues = $decorator->unique ? array_unique($context->getDataValue()) : $context->getDataValue();
+        $dataValues = $decorator->unique ? array_unique($context->getDataTransferObjectValue()) : $context->getDataTransferObjectValue();
 
         foreach ($dataValues as $value) {
             $enumCasePath = "{$decorator->enum}::{$value}";

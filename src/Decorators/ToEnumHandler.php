@@ -21,7 +21,7 @@ final class ToEnumHandler implements DecoratorHandlerInterface
         $context->setDataTransferObjectValue(null);
 
         if (class_exists($enum)) {
-            $dataValue = $context->getDataValue();
+            $dataValue = $context->getDataTransferObjectValue();
 
             if (is_string($dataValue) || is_numeric($dataValue)) {
                 if (!$decorator->byValue) {
@@ -31,7 +31,7 @@ final class ToEnumHandler implements DecoratorHandlerInterface
                         $context->setDataTransferObjectValue(constant($casePath));
                     }
                 } else {
-                    $context->setDataTransferObjectValue($enum::tryFrom($context->getDataValue()));
+                    $context->setDataTransferObjectValue($enum::tryFrom($context->getDataTransferObjectValue()));
                 }
             }
         }

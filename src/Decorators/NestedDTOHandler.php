@@ -31,10 +31,10 @@ final class NestedDTOHandler implements DecoratorHandlerInterface
         $allowNestedDto = true;
 
         if (null !== $decorator->thenCallback) {
-            $allowNestedDto = $currentDto->{$decorator->thenCallback}($context->getDataValue());
+            $allowNestedDto = $currentDto->{$decorator->thenCallback}($context->getDataTransferObjectValue());
         }
 
-        if ($allowNestedDto && is_array($context->getDataValue())) {
+        if ($allowNestedDto && is_array($context->getDataTransferObjectValue())) {
             $nestedDto = $this->createDTO($decorator, $context);
 
             $context->setDataTransferObjectValue($nestedDto);
@@ -62,7 +62,7 @@ final class NestedDTOHandler implements DecoratorHandlerInterface
             $nestedDto->setObject($object);
         }
 
-        $nestedDto->collect(is_array($context->getDataValue()) ? $context->getDataValue() : []);
+        $nestedDto->collect(is_array($context->getDataTransferObjectValue()) ? $context->getDataTransferObjectValue() : []);
 
         if (null !== $decorator->object) {
             $context->setValueForHarvestableObject($nestedDto->getObject());

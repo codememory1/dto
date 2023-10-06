@@ -20,7 +20,7 @@ final class ToTypeHandler implements DecoratorHandlerInterface
     public function handle(DecoratorInterface $decorator, ExecutionContextInterface $context): void
     {
         $property = $context->getProperty();
-        $value = $context->getDataValue();
+        $value = $context->getDataTransferObjectValue();
 
         if (null === $value || (is_string($value) && 1 === preg_match('/^\s*$/', $value)) && $property->getType()->allowNullable()) {
             $this->setValue($decorator, $context, null);

@@ -15,10 +15,10 @@ final class ExpectArrayHandler implements DecoratorHandlerInterface
     {
         $values = [];
 
-        if ($context->getDataValue()) {
+        if ($context->getDataTransferObjectValue()) {
             foreach ($decorator->expectKeys as $expectKey) {
-                if (array_key_exists($expectKey, $context->getDataValue())) {
-                    $values[$expectKey] = $context->getDataValue()[$expectKey];
+                if (array_key_exists($expectKey, $context->getDataTransferObjectValue())) {
+                    $values[$expectKey] = $context->getDataTransferObjectValue()[$expectKey];
                 }
             }
         }
