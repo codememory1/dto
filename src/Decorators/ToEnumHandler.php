@@ -17,8 +17,7 @@ final class ToEnumHandler implements DecoratorHandlerInterface
     public function handle(DecoratorInterface $decorator, ExecutionContextInterface $context): void
     {
         $enum = $context->getProperty()->getType()->getName();
-
-        $context->setDataTransferObjectValue(null);
+        $value = null;
 
         if (class_exists($enum)) {
             $dataValue = $context->getDataTransferObjectValue();
@@ -28,14 +27,14 @@ final class ToEnumHandler implements DecoratorHandlerInterface
                     $casePath = "{$enum}::{$dataValue}";
 
                     if (defined($casePath)) {
-                        $context->setDataTransferObjectValue(constant($casePath));
+                        $value = constant($casePath);
                     }
                 } else {
-                    $context->setDataTransferObjectValue($enum::tryFrom($context->getDataTransferObjectValue()));
+                    $value = $enum::tryFrom($dataValue);
                 }
             }
         }
 
-        $context->setValueForHarvestableObject($context->getDataTransferObjectValue());
+        $context->setDataTransferObjectValue($value);
     }
 }
