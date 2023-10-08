@@ -2,6 +2,7 @@
 
 namespace Codememory\Dto\Decorators;
 
+use Codememory\Dto\AbstractDataTransferObject;
 use Codememory\Dto\Exceptions\DataTransferObjectNotFoundException;
 use Codememory\Dto\Interfaces\DataTransferObjectInterface;
 use Codememory\Dto\Interfaces\DecoratorHandlerInterface;
@@ -48,6 +49,8 @@ final class NestedDTOHandler implements DecoratorHandlerInterface
     private function createDTO(NestedDTO $decorator, ExecutionContextInterface $context): DataTransferObjectInterface
     {
         $currentDto = $context->getDataTransferObject();
+
+        /** @var AbstractDataTransferObject $nestedDto */
         $nestedDto = new ($decorator->dto)(
             $currentDto->getCollector(),
             $currentDto->getConfigurationFactory(),
@@ -59,14 +62,12 @@ final class NestedDTOHandler implements DecoratorHandlerInterface
         if (null !== $decorator->object) {
             $object = 'current' === $decorator->object ? $context->getDataTransferObject()->getHarvestableObject() : new ($decorator->object)();
 
-            $nestedDto->setObject($object);
+            if (null !== $object) {
+                $nestedDto->setHarvestableObject($object);
+            }
         }
 
         $nestedDto->collect(is_array($context->getDataTransferObjectValue()) ? $context->getDataTransferObjectValue() : []);
-
-        if (null !== $decorator->object) {
-            $context->setValueForHarvestableObject($nestedDto->getObject());
-        }
 
         return $nestedDto;
     }
