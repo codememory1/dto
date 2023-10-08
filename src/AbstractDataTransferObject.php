@@ -140,7 +140,10 @@ abstract class AbstractDataTransferObject implements DataTransferObjectInterface
 
     public function collect(array $data): self
     {
-        $properties = $this->getConfiguration()->getDataTransferObjectPropertyProvider()->getProperties($this->getClassReflector());
+        $properties = array_replace(
+            array_flip($this->propertyProcessingOrder()),
+            $this->getConfiguration()->getDataTransferObjectPropertyProvider()->getProperties($this->getClassReflector())
+        );
 
         foreach ($properties as $property) {
             if ($property instanceof PropertyReflector) {
@@ -162,6 +165,14 @@ abstract class AbstractDataTransferObject implements DataTransferObjectInterface
         }
 
         return $this;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    protected function propertyProcessingOrder(): array
+    {
+        return [];
     }
 
     private function propertyHandler(ExecutionContextInterface $context): void
