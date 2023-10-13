@@ -35,7 +35,7 @@ final class NestedDTOHandler implements DecoratorHandlerInterface
             $allowNestedDto = $currentDto->{$decorator->thenCallback}($context->getDataTransferObjectValue());
         }
 
-        if ($allowNestedDto && is_array($context->getDataTransferObjectValue())) {
+        if ($allowNestedDto) {
             $nestedDto = $this->createDTO($decorator, $context);
 
             $context->setDataTransferObjectValue($nestedDto);
