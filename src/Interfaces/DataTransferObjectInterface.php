@@ -2,7 +2,6 @@
 
 namespace Codememory\Dto\Interfaces;
 
-use Codememory\Dto\Collection\DataTransferObjectPropertyConstraintsCollection;
 use Codememory\Reflection\ReflectorManager;
 use Codememory\Reflection\Reflectors\ClassReflector;
 use Symfony\Component\Validator\Constraint;
@@ -28,21 +27,16 @@ interface DataTransferObjectInterface
     public function setHarvestableObject(object $object): self;
 
     /**
-     * @param array<int, DataTransferObjectPropertyConstraintsCollection>|DataTransferObjectPropertyConstraintsCollection $dataTransferObjectPropertyConstraintsCollection
+     * @return array<string, array<int, Constraint>>
      */
-    public function addDataTransferObjectPropertyConstraintsCollection(self $dataTransferObject, DataTransferObjectPropertyConstraintsCollection|array $dataTransferObjectPropertyConstraintsCollection): self;
+    public function getPropertyConstraints(): array;
+
+    public function mergePropertyConstraints(self $dataTransferObject): self;
 
     /**
-     * @return array<string, DataTransferObjectPropertyConstraintsCollection>
+     * @param array<int, Constraint> $constraints
      */
-    public function getListDataTransferObjectPropertyConstrainsCollection(): array;
-
-    public function getDataTransferObjectPropertyConstrainsCollection(self $dataTransferObject): ?DataTransferObjectPropertyConstraintsCollection;
-
-    /**
-     * @param array<int, Constraint>  $constraints
-     */
-    public function addPropertyConstraints(DataTransferObjectInterface $dataTransferObject, string $propertyName, array $constraints): self;
+    public function addPropertyConstraints(self $dataTransferObject, string $propertyName, array $constraints): self;
 
     public function collect(array $data): self;
 
