@@ -40,7 +40,7 @@ final class NestedDTOHandler implements DecoratorHandlerInterface
 
             $context->setDataTransferObjectValue($nestedDto);
 
-            $currentDto->addDataTransferObjectPropertyConstraintsCollection($nestedDto, $nestedDto->getListDataTransferObjectPropertyConstrainsCollection());
+            $currentDto->mergePropertyConstraints($nestedDto);
         } else {
             $context->setDataTransferObjectValue($context->getProperty()->getDefaultValue());
         }
