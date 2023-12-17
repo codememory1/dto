@@ -2,6 +2,8 @@
 
 namespace Codememory\Dto\Validator\Constraints;
 
+use Codememory\Dto\AbstractDataTransferObject;
+use Codememory\Reflection\Reflectors\ClassReflector;
 use RuntimeException;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -22,8 +24,10 @@ final class CollectionValidator extends ConstraintValidator
         }
 
         foreach ($object->{$constraint->methodWithCollection}() as $key => $options) {
+            /** @var ClassReflector $classReflector */
+            $classReflector = $options['dto']->getClassReflector();
             $propertyName = explode('@', $key, 2)[1];
-            $propertyReflector = $options['dto']->getClassReflector()->getPropertyByName($propertyName);
+            $propertyReflector = $classReflector->getPropertiesIncludingParent([AbstractDataTransferObject::class])[$propertyName];
             $propertyValue = $propertyReflector->getValue($options['dto']);
 
             $this->context
