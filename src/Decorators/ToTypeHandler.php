@@ -56,7 +56,11 @@ final class ToTypeHandler implements DecoratorHandlerInterface
 
     private function isType(ToType $decorator, PropertyReflector $property, string $expectedType): bool
     {
-        return $expectedType === $decorator->type || $expectedType === $property->getType()->getName();
+        if (null !== $decorator->type) {
+            return $expectedType === $decorator->type;
+        }
+
+        return $expectedType === $property->getType()->getName();
     }
 
     private function toArray(mixed $value): array
