@@ -6,7 +6,7 @@ use Attribute;
 use Codememory\Dto\Interfaces\DecoratorInterface;
 use LogicException;
 
-#[Attribute(Attribute::TARGET_PROPERTY)]
+#[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
 final class ExpectOneDimensionalArray implements DecoratorInterface
 {
     public const TYPES = [
