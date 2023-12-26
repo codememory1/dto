@@ -118,7 +118,7 @@ abstract class AbstractDataTransferObject implements DataTransferObjectInterface
         $key = sprintf('%s@%s', $dataTransferObject::class, $propertyName);
 
         if (array_key_exists($key, $this->_propertyConstraints)) {
-            $this->_propertyConstraints[$key]['constraints'] += $constraints;
+            $this->_propertyConstraints[$key]['constraints'] = [...$this->_propertyConstraints[$key]['constraints'], ...$constraints];
         } else {
             $this->_propertyConstraints[$key]['dto'] = $dataTransferObject;
             $this->_propertyConstraints[$key]['constraints'] = $constraints;

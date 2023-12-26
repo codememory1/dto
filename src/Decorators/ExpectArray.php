@@ -5,7 +5,7 @@ namespace Codememory\Dto\Decorators;
 use Attribute;
 use Codememory\Dto\Interfaces\DecoratorInterface;
 
-#[Attribute(Attribute::TARGET_PROPERTY)]
+#[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
 final class ExpectArray implements DecoratorInterface
 {
     public function __construct(

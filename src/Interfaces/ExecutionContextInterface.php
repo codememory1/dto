@@ -2,6 +2,7 @@
 
 namespace Codememory\Dto\Interfaces;
 
+use Codememory\Reflection\Reflectors\AttributeReflector;
 use Codememory\Reflection\Reflectors\PropertyReflector;
 
 interface ExecutionContextInterface
