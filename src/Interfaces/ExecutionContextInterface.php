@@ -2,7 +2,6 @@
 
 namespace Codememory\Dto\Interfaces;
 
-use Codememory\Reflection\Reflectors\AttributeReflector;
 use Codememory\Reflection\Reflectors\PropertyReflector;
 
 interface ExecutionContextInterface
@@ -70,4 +69,16 @@ interface ExecutionContextInterface
     public function isSkippedThisProperty(): bool;
 
     public function setSkipThisProperty(bool $skip): self;
+
+    /**
+     * @return array<int, DecoratorInterface>
+     */
+    public function getDecorators(): array;
+
+    /**
+     * @param array<int, DecoratorInterface> $decorators
+     */
+    public function setDecorators(array $decorators): self;
+
+    public function addDecorator(DecoratorInterface $decorator): self;
 }

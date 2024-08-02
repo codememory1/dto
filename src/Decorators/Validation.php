@@ -5,7 +5,7 @@ namespace Codememory\Dto\Decorators;
 use Attribute;
 use Codememory\Dto\Interfaces\DecoratorInterface;
 
-#[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
+#[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE | Attribute::TARGET_PARAMETER)]
 final class Validation implements DecoratorInterface
 {
     public function __construct(

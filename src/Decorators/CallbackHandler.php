@@ -16,10 +16,12 @@ final class CallbackHandler implements DecoratorHandlerInterface
      */
     public function handle(DecoratorInterface $decorator, ExecutionContextInterface $context): void
     {
-        if (!method_exists($context->getDataTransferObject(), $decorator->methodName)) {
-            throw new MethodNotFoundException($context->getDataTransferObject()::class, $decorator->methodName);
+        $dto = $context->getDataTransferObject();
+
+        if (!method_exists($dto, $decorator->methodName)) {
+            throw new MethodNotFoundException($dto::class, $decorator->methodName);
         }
 
-        $context->getDataTransferObject()->{$decorator->methodName}($context);
+        $dto->getClassReflector()->getMethodByName($decorator->methodName)->invoke($dto, $context);
     }
 }

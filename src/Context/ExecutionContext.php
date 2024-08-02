@@ -3,6 +3,7 @@
 namespace Codememory\Dto\Context;
 
 use Codememory\Dto\Interfaces\DataTransferObjectInterface;
+use Codememory\Dto\Interfaces\DecoratorInterface;
 use Codememory\Dto\Interfaces\ExecutionContextInterface;
 use Codememory\Reflection\Reflectors\PropertyReflector;
 
@@ -15,6 +16,7 @@ final class ExecutionContext implements ExecutionContextInterface
     private mixed $nameSetterMethodForHarvestableObject = null;
     private bool $ignoredSetterCallForHarvestableObject = false;
     private bool $skippedThisProperty = false;
+    private array $decorators = [];
 
     public function __construct(
         private readonly DataTransferObjectInterface $dataTransferObject,
@@ -119,6 +121,25 @@ final class ExecutionContext implements ExecutionContextInterface
     public function setSkipThisProperty(bool $skip): ExecutionContextInterface
     {
         $this->skippedThisProperty = $skip;
+
+        return $this;
+    }
+
+    public function getDecorators(): array
+    {
+        return $this->decorators;
+    }
+
+    public function setDecorators(array $decorators): ExecutionContextInterface
+    {
+        $this->decorators = $decorators;
+
+        return $this;
+    }
+
+    public function addDecorator(DecoratorInterface $decorator): ExecutionContextInterface
+    {
+        $this->decorators[] = $decorator;
 
         return $this;
     }

@@ -38,6 +38,8 @@ interface DataTransferObjectInterface
      */
     public function addPropertyConstraints(self $dataTransferObject, string $propertyName, array $constraints): self;
 
+    public function addPreMapCallback(callable $callback): self;
+
     public function collect(array $data): self;
 
     public function recollectHarvestableObject(object $newObject): self;

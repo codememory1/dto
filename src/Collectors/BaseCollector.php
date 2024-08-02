@@ -25,6 +25,26 @@ final class BaseCollector implements CollectorInterface
                 if ($context->isSkippedThisProperty()) {
                     break;
                 }
+
+                $this->nestedDecoratorsHandler($context);
+            }
+        }
+    }
+
+    /**
+     * @throws DecoratorHandlerNotRegisteredException
+     */
+    private function nestedDecoratorsHandler(ExecutionContextInterface $context): void
+    {
+        foreach ($context->getDecorators() as $decorator) {
+            if ($decorator instanceof DecoratorInterface) {
+                $this->decoratorHandler($decorator, $context);
+
+                if ($context->isSkippedThisProperty()) {
+                    break;
+                }
+
+                $this->nestedDecoratorsHandler($context);
             }
         }
     }
@@ -48,6 +68,8 @@ final class BaseCollector implements CollectorInterface
         if (!class_exists($decorator->getHandler())) {
             throw new DecoratorHandlerNotRegisteredException($decorator->getHandler());
         }
+
+        $context->setDecorators([]);
 
         $context->getDataTransferObject()
             ->getDecoratorHandlerRegistrar()

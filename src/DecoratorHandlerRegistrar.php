@@ -29,6 +29,7 @@ class DecoratorHandlerRegistrar implements DecoratorHandlerRegistrarInterface
         $this->register(new Decorators\ValidationHandler());
         $this->register(new Decorators\XSSHandler());
         $this->register(new Decorators\DynamicValidationHandler());
+        $this->register(new Decorators\DynamicDecoratorsHandler());
     }
 
     public function register(DecoratorHandlerInterface $handler): DecoratorHandlerRegistrarInterface
