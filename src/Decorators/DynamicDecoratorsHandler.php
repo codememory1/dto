@@ -31,16 +31,14 @@ final class DynamicDecoratorsHandler implements DecoratorHandlerInterface
      */
     private function getDecoratorsFromMethod(DecoratorInterface $decorator, ExecutionContextInterface $context): array
     {
+        $className = $context->getDataTransferObject()->getClassName();
+
         if (null !== $decorator->methodName) {
-            if (!method_exists($context->getDataTransferObject(), $decorator->methodName)) {
-                throw new MethodNotFoundException($context->getDataTransferObject()::class, $decorator->methodName);
+            if (!method_exists($className, $decorator->methodName)) {
+                throw new MethodNotFoundException($className, $decorator->methodName);
             }
 
-            return $context
-                ->getDataTransferObject()
-                ->getClassReflector()
-                ->getMethodByName($decorator->methodName)
-                ->invoke($context->getDataTransferObject()) ?: [];
+            return $className::{$decorator->methodName}($className) ?: [];
         }
 
         return [];

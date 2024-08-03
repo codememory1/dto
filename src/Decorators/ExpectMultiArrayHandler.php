@@ -16,23 +16,20 @@ final class ExpectMultiArrayHandler implements DecoratorHandlerInterface
     {
         $values = [];
 
-        if (is_array($context->getDataTransferObjectValue())) {
-            foreach ($context->getDataTransferObjectValue() as $index => $item) {
-                if (is_array($item)) {
-                    $newItem = [];
+        foreach ($context->getValue() as $index => $item) {
+            if (is_array($item)) {
+                $newItem = [];
 
-                    foreach ($decorator->expectKeys as $expectKey) {
-                        if (array_key_exists($expectKey, $item)) {
-                            $newItem[$expectKey] = $item[$expectKey];
-                        }
+                foreach ($decorator->expectKeys as $expectKey) {
+                    if (array_key_exists($expectKey, $item)) {
+                        $newItem[$expectKey] = $item[$expectKey];
                     }
-
-                    $decorator->itemKeyAsNumber ? $values[] = $newItem : $values[$index] = $newItem;
                 }
+
+                $decorator->itemKeyAsNumber ? $values[] = $newItem : $values[$index] = $newItem;
             }
         }
 
-        $context->setDataTransferObjectValue($values);
-        $context->setValueForHarvestableObject($values);
+        $context->setValue($values);
     }
 }

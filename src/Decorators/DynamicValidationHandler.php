@@ -6,6 +6,7 @@ use Codememory\Dto\Exceptions\MethodNotFoundException;
 use Codememory\Dto\Interfaces\DecoratorHandlerInterface;
 use Codememory\Dto\Interfaces\DecoratorInterface;
 use Codememory\Dto\Interfaces\ExecutionContextInterface;
+use Codememory\Dto\Storage\SymfonyValidatorStorage;
 use function is_array;
 use RuntimeException;
 
@@ -19,22 +20,23 @@ final class DynamicValidationHandler implements DecoratorHandlerInterface
     public function handle(DecoratorInterface $decorator, ExecutionContextInterface $context): void
     {
         $dto = $context->getDataTransferObject();
-        $dtoNamespace = $dto::class;
 
         if (!method_exists($dto, $decorator->callbackName)) {
-            throw new MethodNotFoundException($dtoNamespace, $decorator->callbackName);
+            throw new MethodNotFoundException($dto->getClassName(), $decorator->callbackName);
         }
 
-        $callbackResult = $dto->getClassReflector()->getMethodByName($decorator->callbackName)->invoke($dto);
+        $callbackResult = $dto->getClassName()::{$decorator->callbackName}($context);
 
         if (!is_array($callbackResult)) {
-            throw new RuntimeException("Callback \"{$decorator->callbackName}\" in DTO \"{$dtoNamespace}\" should return an \"array\"");
+            throw new RuntimeException("Callback \"{$decorator->callbackName}\" in DTO \"{$dto->getClassName()}\" should return an \"array\"");
         }
 
-        $context->getDataTransferObject()->addPropertyConstraints(
-            $dto,
-            $context->getProperty()->getName(),
-            $callbackResult
-        );
+        if (!$dto->existStorage(SymfonyValidatorStorage::class)) {
+            $dto->createStorage(new SymfonyValidatorStorage());
+        }
+
+        $storage = $dto->getStorage(SymfonyValidatorStorage::class);
+
+        $storage->addConstraints($context->getProperty(), $callbackResult);
     }
 }

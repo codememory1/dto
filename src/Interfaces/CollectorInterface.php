@@ -4,5 +4,8 @@ namespace Codememory\Dto\Interfaces;
 
 interface CollectorInterface
 {
-    public function collect(ExecutionContextInterface $context): void;
+    /**
+     * @param array<int, DecoratorInterface> $decorators
+     */
+    public function collect(ExecutionContextInterface $context, array $decorators): void;
 }

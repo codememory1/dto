@@ -4,30 +4,30 @@ namespace Codememory\Dto\Collectors;
 
 use Codememory\Dto\Exceptions\DecoratorHandlerNotRegisteredException;
 use Codememory\Dto\Interfaces\CollectorInterface;
+use Codememory\Dto\Interfaces\DecoratorHandlerRegistrarInterface;
 use Codememory\Dto\Interfaces\DecoratorInterface;
 use Codememory\Dto\Interfaces\ExecutionContextInterface;
-use Codememory\Reflection\Reflectors\AttributeReflector;
 
-final class BaseCollector implements CollectorInterface
+class BaseCollector implements CollectorInterface
 {
+    public function __construct(
+        protected readonly DecoratorHandlerRegistrarInterface $decoratorHandlerRegistrar
+    ) {
+    }
+
     /**
      * @throws DecoratorHandlerNotRegisteredException
      */
-    public function collect(ExecutionContextInterface $context): void
+    public function collect(ExecutionContextInterface $context, array $decorators): void
     {
-        foreach ($this->getAttributes($context) as $attribute) {
-            /** @var DecoratorInterface $decorator */
-            $decorator = $attribute->getInstance();
+        foreach ($decorators as $decorator) {
+            $this->decoratorHandler($decorator, $context);
 
-            if ($decorator instanceof DecoratorInterface) {
-                $this->decoratorHandler($decorator, $context);
-
-                if ($context->isSkippedThisProperty()) {
-                    break;
-                }
-
-                $this->nestedDecoratorsHandler($context);
+            if ($context->isSkippedThisProperty()) {
+                break;
             }
+
+            $this->nestedDecoratorsHandler($context);
         }
     }
 
@@ -50,17 +50,6 @@ final class BaseCollector implements CollectorInterface
     }
 
     /**
-     * @return array<int, AttributeReflector>
-     */
-    private function getAttributes(ExecutionContextInterface $context): array
-    {
-        return [
-            ...$context->getDataTransferObject()->getClassReflector()->getAttributes(),
-            ...$context->getProperty()->getAttributes()
-        ];
-    }
-
-    /**
      * @throws DecoratorHandlerNotRegisteredException
      */
     private function decoratorHandler(DecoratorInterface $decorator, ExecutionContextInterface $context): void
@@ -71,9 +60,6 @@ final class BaseCollector implements CollectorInterface
 
         $context->setDecorators([]);
 
-        $context->getDataTransferObject()
-            ->getDecoratorHandlerRegistrar()
-            ->getHandler($decorator->getHandler())
-            ->handle($decorator, $context);
+        $this->decoratorHandlerRegistrar->getHandler($decorator->getHandler())->handle($decorator, $context);
     }
 }
