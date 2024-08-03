@@ -6,5 +6,10 @@ use Codememory\Reflection\Reflectors\PropertyReflector;
 
 interface ExecutionContextFactoryInterface
 {
-    public function createExecutionContext(DataTransferObjectInterface $dataTransferObject, PropertyReflector $property, array $data): ExecutionContextInterface;
+    public function createExecutionContext(
+        DataTransferObjectManagerInterface $manager,
+        DataTransferObjectInterface $dataTransferObject,
+        PropertyReflector $property,
+        array $inputData
+    ): ExecutionContextInterface;
 }

@@ -17,15 +17,12 @@ final class ExpectOneDimensionalArrayHandler implements DecoratorHandlerInterfac
     {
         $values = [];
 
-        if (is_array($context->getDataTransferObjectValue())) {
-            foreach ($context->getDataTransferObjectValue() as $value) {
-                if (!is_array($value) && ([] === $decorator->types || in_array(gettype($value), $decorator->types, true))) {
-                    $values[] = $value;
-                }
+        foreach ($context->getValue() as $value) {
+            if (!is_array($value) && ([] === $decorator->types || in_array(gettype($value), $decorator->types, true))) {
+                $values[] = $value;
             }
         }
 
-        $context->setDataTransferObjectValue($values);
-        $context->setValueForHarvestableObject($values);
+        $context->setValue($values);
     }
 }

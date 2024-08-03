@@ -19,16 +19,12 @@ class DecoratorHandlerRegistrar implements DecoratorHandlerRegistrarInterface
         $this->register(new Decorators\ExpectArrayHandler());
         $this->register(new Decorators\ExpectMultiArrayHandler());
         $this->register(new Decorators\ExpectOneDimensionalArrayHandler());
-        $this->register(new Decorators\IgnoreSetterCallForHarvestableObjectHandler());
         $this->register(new Decorators\NestedDTOHandler());
-        $this->register(new Decorators\PrefixSetterMethodForHarvestableObjectHandler());
-        $this->register(new Decorators\SetterMethodForHarvestableObjectHandler());
         $this->register(new Decorators\ToEnumHandler());
         $this->register(new Decorators\ToEnumListHandler());
-        $this->register(new Decorators\ToTypeHandler());
         $this->register(new Decorators\ValidationHandler());
-        $this->register(new Decorators\XSSHandler());
         $this->register(new Decorators\DynamicValidationHandler());
+        $this->register(new Decorators\DynamicDecoratorsHandler());
     }
 
     public function register(DecoratorHandlerInterface $handler): DecoratorHandlerRegistrarInterface

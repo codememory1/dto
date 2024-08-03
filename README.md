@@ -30,7 +30,7 @@ use Codememory\Dto\Factory\ConfigurationFactory;
 use Codememory\Dto\DecoratorHandlerRegistrar;
 use Codememory\Reflection\ReflectorManager;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
-use Codememory\Dto\AbstractDataTransferObject;
+use Codememory\Dto\DataTransferObjectManager;
 use Codememory\Dto\Factory\ExecutionContextFactory;
 
 enum StatusEnum
@@ -40,7 +40,7 @@ enum StatusEnum
 }
 
 #[DD\ToType]
-final class UserDto extends AbstractDataTransferObject
+final class UserDto extends DataTransferObjectManager
 {
     public ?string $name = null;
     public ?string $surname = null;
@@ -76,17 +76,18 @@ $userDto->collect([
 ```
 
 ### Validate DTO with symfony/validator
+
 ```php
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Constraints as Assert;
 use Codememory\Reflection\ReflectorManager;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
-use Codememory\Dto\AbstractDataTransferObject;
+use Codememory\Dto\DataTransferObjectManager;
 use Codememory\Dto\Factory\ConfigurationFactory;
 use Codememory\Dto\DecoratorHandlerRegistrar;
 use Codememory\Dto\Factory\ExecutionContextFactory;
 
-final ProductDto extends AbstractDataTransferObject
+final ProductDto extends DataTransferObjectManager
 {
     #[DD\Validation([
         new Assert\NotBlank(message: 'Name is required'),
@@ -253,7 +254,7 @@ use Codememory\Dto\Interfaces\DecoratorHandlerInterface;
 use Codememory\Dto\Interfaces\ExecutionContextInterface;
 use Codememory\Reflection\ReflectorManager;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
-use Codememory\Dto\AbstractDataTransferObject;
+use Codememory\Dto\DataTransferObjectManager;
 use Codememory\Dto\Factory\ExecutionContextFactory;
 use Codememory\Dto\Factory\ConfigurationFactory;
 use Codememory\Dto\DecoratorHandlerRegistrar;
@@ -293,7 +294,7 @@ final class PropertyConcatenationHandler implements DecoratorHandlerInterface
 }
 
 // Let's test our decorator
-final class TestDto extends AbstractDataTransferObject
+final class TestDto extends DataTransferObjectManager
 {
     public ?string $name = null;
     public ?string $surname = null;

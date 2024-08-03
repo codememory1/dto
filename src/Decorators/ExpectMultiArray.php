@@ -4,9 +4,10 @@ namespace Codememory\Dto\Decorators;
 
 use Attribute;
 use Codememory\Dto\Interfaces\DecoratorInterface;
+use Codememory\Dto\Interfaces\ValueModifyingDecoratorInterface;
 
-#[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
-final class ExpectMultiArray implements DecoratorInterface
+#[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE | Attribute::TARGET_PARAMETER)]
+final class ExpectMultiArray implements DecoratorInterface, ValueModifyingDecoratorInterface
 {
     /**
      * @param array<int, string> $expectKeys

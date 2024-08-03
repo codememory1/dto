@@ -3,25 +3,28 @@
 namespace Codememory\Dto\Context;
 
 use Codememory\Dto\Interfaces\DataTransferObjectInterface;
+use Codememory\Dto\Interfaces\DataTransferObjectManagerInterface;
+use Codememory\Dto\Interfaces\DecoratorInterface;
 use Codememory\Dto\Interfaces\ExecutionContextInterface;
 use Codememory\Reflection\Reflectors\PropertyReflector;
 
 final class ExecutionContext implements ExecutionContextInterface
 {
-    private mixed $dataValue = null;
-    private mixed $dataTransferValue = null;
-    private mixed $valueForHarvestableObject = null;
-    private string $dataKey;
-    private mixed $nameSetterMethodForHarvestableObject = null;
-    private bool $ignoredSetterCallForHarvestableObject = false;
+    private mixed $value = null;
     private bool $skippedThisProperty = false;
+    private array $decorators = [];
 
     public function __construct(
+        private readonly DataTransferObjectManagerInterface $manager,
         private readonly DataTransferObjectInterface $dataTransferObject,
         private readonly PropertyReflector $property,
-        private readonly array $data
+        private readonly array $inputData
     ) {
-        $this->dataKey = $this->dataTransferObject->getConfiguration()->getDataKeyNamingStrategy()->convert($this->property->getName());
+    }
+
+    public function getManager(): DataTransferObjectManagerInterface
+    {
+        return $this->manager;
     }
 
     public function getDataTransferObject(): DataTransferObjectInterface
@@ -34,79 +37,19 @@ final class ExecutionContext implements ExecutionContextInterface
         return $this->property;
     }
 
-    public function getData(): array
+    public function getInputData(): array
     {
-        return $this->data;
+        return $this->inputData;
     }
 
-    public function getDataValue(): mixed
+    public function getValue(): mixed
     {
-        return $this->dataValue;
+        return $this->value;
     }
 
-    public function setDataValue(mixed $value): ExecutionContextInterface
+    public function setValue(mixed $value): ExecutionContextInterface
     {
-        $this->dataValue = $value;
-
-        return $this;
-    }
-
-    public function getDataTransferObjectValue(): mixed
-    {
-        return $this->dataTransferValue;
-    }
-
-    public function setDataTransferObjectValue(mixed $value): ExecutionContextInterface
-    {
-        $this->dataTransferValue = $value;
-
-        return $this;
-    }
-
-    public function getValueForHarvestableObject(): mixed
-    {
-        return $this->valueForHarvestableObject;
-    }
-
-    public function setValueForHarvestableObject(mixed $value): ExecutionContextInterface
-    {
-        $this->valueForHarvestableObject = $value;
-
-        return $this;
-    }
-
-    public function getDataKey(): string
-    {
-        return $this->dataKey;
-    }
-
-    public function setDataKey(string $key): ExecutionContextInterface
-    {
-        $this->dataKey = $key;
-
-        return $this;
-    }
-
-    public function getNameSetterMethodForHarvestableObject(): mixed
-    {
-        return $this->nameSetterMethodForHarvestableObject;
-    }
-
-    public function setNameSetterMethodForHarvestableObject(string $name): ExecutionContextInterface
-    {
-        $this->nameSetterMethodForHarvestableObject = $name;
-
-        return $this;
-    }
-
-    public function isIgnoredSetterCallForHarvestableObject(): bool
-    {
-        return $this->ignoredSetterCallForHarvestableObject;
-    }
-
-    public function setIgnoredSetterCallForHarvestableObject(bool $ignore): ExecutionContextInterface
-    {
-        $this->ignoredSetterCallForHarvestableObject = $ignore;
+        $this->value = $value;
 
         return $this;
     }
@@ -119,6 +62,25 @@ final class ExecutionContext implements ExecutionContextInterface
     public function setSkipThisProperty(bool $skip): ExecutionContextInterface
     {
         $this->skippedThisProperty = $skip;
+
+        return $this;
+    }
+
+    public function getDecorators(): array
+    {
+        return $this->decorators;
+    }
+
+    public function setDecorators(array $decorators): ExecutionContextInterface
+    {
+        $this->decorators = $decorators;
+
+        return $this;
+    }
+
+    public function addDecorator(DecoratorInterface $decorator): ExecutionContextInterface
+    {
+        $this->decorators[] = $decorator;
 
         return $this;
     }

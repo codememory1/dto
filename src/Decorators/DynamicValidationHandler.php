@@ -6,6 +6,8 @@ use Codememory\Dto\Exceptions\MethodNotFoundException;
 use Codememory\Dto\Interfaces\DecoratorHandlerInterface;
 use Codememory\Dto\Interfaces\DecoratorInterface;
 use Codememory\Dto\Interfaces\ExecutionContextInterface;
+use Codememory\Dto\Storage\SymfonyValidatorStorage;
+use function is_array;
 use RuntimeException;
 
 final class DynamicValidationHandler implements DecoratorHandlerInterface
@@ -17,22 +19,24 @@ final class DynamicValidationHandler implements DecoratorHandlerInterface
      */
     public function handle(DecoratorInterface $decorator, ExecutionContextInterface $context): void
     {
-        $dtoNamespace = $context->getDataTransferObject()::class;
+        $dto = $context->getDataTransferObject();
 
-        if (!method_exists($context->getDataTransferObject(), $decorator->callbackName)) {
-            throw new MethodNotFoundException($dtoNamespace, $decorator->callbackName);
+        if (!method_exists($dto, $decorator->callbackName)) {
+            throw new MethodNotFoundException($dto->getClassName(), $decorator->callbackName);
         }
 
-        $callbackResult = $context->getDataTransferObject()->{$decorator->callbackName}();
+        $callbackResult = $dto->getClassName()::{$decorator->callbackName}($context);
 
         if (!is_array($callbackResult)) {
-            throw new RuntimeException("Callback \"{$decorator->callbackName}\" in DTO \"$dtoNamespace\" should return an \"array\"");
+            throw new RuntimeException("Callback \"{$decorator->callbackName}\" in DTO \"{$dto->getClassName()}\" should return an \"array\"");
         }
 
-        $context->getDataTransferObject()->addPropertyConstraints(
-            $context->getDataTransferObject(),
-            $context->getProperty()->getName(),
-            $context->getDataTransferObject()->{$decorator->callbackName}()
-        );
+        if (!$dto->existStorage(SymfonyValidatorStorage::class)) {
+            $dto->createStorage(new SymfonyValidatorStorage());
+        }
+
+        $storage = $dto->getStorage(SymfonyValidatorStorage::class);
+
+        $storage->addConstraints($context->getProperty(), $callbackResult);
     }
 }
