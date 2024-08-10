@@ -19,8 +19,16 @@ final class ExecutionContextFactory implements ExecutionContextFactoryInterface
         array $inputData
     ): ExecutionContextInterface {
         $context = new ExecutionContext($manager, $dataTransferObject, $property, $inputData);
+        $snakePropertyName = u($property->getName())->snake()->toString();
+        $value = $property->getDefaultValue();
 
-        $context->setValue($context->getInputData()[u($property->getName())->snake()->toString()] ?? $property->getDefaultValue());
+        if (array_key_exists($snakePropertyName, $context->getInputData())) {
+            $value = $context->getInputData()[$snakePropertyName];
+        } else if (array_key_exists($property->getName(), $inputData)) {
+            $value = $context->getInputData()[$property->getName()];
+        }
+        
+        $context->setValue($value);
         $context->setSkipThisProperty(false);
 
         return $context;
