@@ -19,7 +19,7 @@ final class NestedDTOHandler implements DecoratorHandlerInterface
      */
     public function handle(DecoratorInterface $decorator, ExecutionContextInterface $context): void
     {
-        if (!class_exists($decorator->dto)) {
+        if (null !== $decorator->dto && !class_exists($decorator->dto)) {
             throw new DataTransferObjectNotFoundException($decorator->dto);
         }
 
