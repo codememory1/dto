@@ -86,8 +86,6 @@ class DataTransferObjectManager implements DataTransferObjectManagerInterface
             $callback($dataTransferObject, $build, $inputData);
         }
 
-        $this->postNonValueModifyingDecoratorCallbacks = [];
-
         return $build;
     }
 

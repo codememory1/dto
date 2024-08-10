@@ -28,8 +28,8 @@ final class NestedDTOHandler implements DecoratorHandlerInterface
         if ($decorator->dto) {
             $DTOs = [];
 
-            foreach ($context->getValue() as $value) {
-                $DTOs[] = $context->getManager()->create($DTOClassName, $this->getValue($decorator, $value));
+            foreach ($this->getValue($decorator, $context->getValue()) as $value) {
+                $DTOs[] = $context->getManager()->create($DTOClassName, $value);
             }
 
             $context->setValue($DTOs);
