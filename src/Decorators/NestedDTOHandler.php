@@ -23,6 +23,23 @@ final class NestedDTOHandler implements DecoratorHandlerInterface
             throw new DataTransferObjectNotFoundException($decorator->dto);
         }
 
-        $context->setValue($context->getManager()->create($decorator->dto, $context->getValue()));
+        $DTOClassName = $decorator->dto ?: $context->getProperty()->getType()->getName();
+
+        if ($decorator->dto) {
+            $DTOs = [];
+
+            foreach ($context->getValue() as $value) {
+                $DTOs[] = $context->getManager()->create($DTOClassName, $this->getValue($decorator, $value));
+            }
+
+            $context->setValue($DTOs);
+        } else {
+            $context->setValue($context->getManager()->create($DTOClassName, $this->getValue($decorator, $context->getValue())));
+        }
+    }
+
+    private function getValue(NestedDTO $decorator, array $value): array
+    {
+        return null === $decorator->fromKey ? $value : $value[$decorator->fromKey];
     }
 }

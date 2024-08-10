@@ -10,9 +10,8 @@ use Codememory\Dto\Interfaces\ValueModifyingDecoratorInterface;
 final class NestedDTO implements DecoratorInterface, ValueModifyingDecoratorInterface
 {
     public function __construct(
-        public readonly string $dto,
-        public readonly ?string $object = null,
-        public readonly ?string $thenCallback = null
+        public readonly ?string $dto = null,
+        public readonly ?string $fromKey = null
     ) {
     }
 

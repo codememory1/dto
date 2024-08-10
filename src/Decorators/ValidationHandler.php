@@ -20,6 +20,6 @@ final class ValidationHandler implements DecoratorHandlerInterface
 
         $storage = $context->getDataTransferObject()->getStorage(SymfonyValidatorStorage::class);
 
-        $storage->addConstraints($context->getProperty(), $decorator->assert);
+        $storage->addConstraints($context->getProperty(), $context->getDataTransferObject()->getClassName(), $decorator->assert);
     }
 }
