@@ -21,7 +21,7 @@ final class DynamicValidationHandler implements DecoratorHandlerInterface
     {
         $dto = $context->getDataTransferObject();
 
-        if (!method_exists($dto, $decorator->callbackName)) {
+        if (!method_exists($dto->getClassName(), $decorator->callbackName)) {
             throw new MethodNotFoundException($dto->getClassName(), $decorator->callbackName);
         }
 
@@ -37,6 +37,6 @@ final class DynamicValidationHandler implements DecoratorHandlerInterface
 
         $storage = $dto->getStorage(SymfonyValidatorStorage::class);
 
-        $storage->addConstraints($context->getProperty(), $callbackResult);
+        $storage->addConstraints($context->getProperty(), $dto->getClassName(), $callbackResult);
     }
 }
