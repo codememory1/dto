@@ -2,13 +2,27 @@
 
 namespace Codememory\Dto\Exceptions;
 
-use Exception;
+use function sprintf;
 use Throwable;
 
-final class DecoratorHandlerNotRegisteredException extends Exception
+class DecoratorHandlerNotRegisteredException extends DataTransferObjectException
 {
-    public function __construct(string $decoratorHandlerNamespace, int $code = 0, ?Throwable $previous = null)
-    {
-        parent::__construct("The decorator handler {$decoratorHandlerNamespace} is not registered in the DataTransfer configuration", $code, $previous);
+    public function __construct(
+        string $dataTransferObjectClassName,
+        string $decoratorClassName,
+        string $decoratorHandlerClassName,
+        int $code = 0,
+        ?Throwable $previous = null
+    ) {
+        parent::__construct(
+            $dataTransferObjectClassName,
+            sprintf(
+                'The "%s" handler for the "%s" decorator is not registered.',
+                $decoratorHandlerClassName,
+                $decoratorClassName
+            ),
+            $code,
+            $previous
+        );
     }
 }

@@ -2,6 +2,6 @@
 
 namespace Codememory\Dto\Interfaces;
 
-interface DecoratorHandlerInterface
+interface MutatingDecoratorTypeInterface
 {
 }
