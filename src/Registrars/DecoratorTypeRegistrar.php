@@ -17,6 +17,7 @@ class DecoratorTypeRegistrar implements DecoratorTypeRegistrarInterface
         $this->register(SymfonyValidationDecoratorTypeInterface::class, 0);
         $this->register(NonMutatingDecoratorTypeInterface::class, 1);
         $this->register(MutatingDecoratorTypeInterface::class, 2);
+        $this->register('__no_attributes__', 2);
     }
 
     public function register(string $type, int $priority): static
