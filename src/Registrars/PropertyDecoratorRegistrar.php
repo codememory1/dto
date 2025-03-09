@@ -14,8 +14,10 @@ class PropertyDecoratorRegistrar implements PropertyDecoratorRegistrarInterface
     public function __construct()
     {
         $this->registerHandler(new Property\SymfonyValidationHandler());
+        $this->registerHandler(new Property\DynamicSymfonyValidationHandler());
         $this->registerHandler(new Property\ToEnumHandler());
         $this->registerHandler(new Property\NestedHandler());
+        $this->registerHandler(new Property\DynamicNestedHandler());
     }
 
     public function registerHandler(DecoratorHandlerInterface $handler): static
