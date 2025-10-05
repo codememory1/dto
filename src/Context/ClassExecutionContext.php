@@ -11,6 +11,7 @@ use Codememory\Reflection\Reflectors\PropertyReflector;
 class ClassExecutionContext implements ClassExecutionContextInterface
 {
     private array $propertyWrappers;
+    private array $attributes;
     private array $metadata = [];
 
     public function __construct(
@@ -23,6 +24,7 @@ class ClassExecutionContext implements ClassExecutionContextInterface
             fn (PropertyReflector $propertyReflector) => $this->propertyWrapperFactory->create($propertyReflector),
             $this->reflector->getProperties()
         );
+        $this->setAttributes($this->reflector->getAttributes());
     }
 
     public function getManager(): DataTransferObjectManagerInterface
@@ -33,6 +35,18 @@ class ClassExecutionContext implements ClassExecutionContextInterface
     public function getReflector(): ClassReflector
     {
         return $this->reflector;
+    }
+
+    public function getAttributes(): array
+    {
+        return $this->attributes;
+    }
+
+    public function setAttributes(array $attributes): static
+    {
+        $this->attributes = $attributes;
+
+        return $this;
     }
 
     public function getData(): array
