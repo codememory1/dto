@@ -28,7 +28,7 @@ readonly class ClassDecoratorProcessor implements ClassDecoratorProcessorInterfa
     {
         $this->eventDispatcher->dispatch(new BeforeProcessedClassDecoratorsEvent($classExecutionContext, $data));
 
-        foreach ($classExecutionContext->getReflector()->getAttributes() as $attribute) {
+        foreach ($classExecutionContext->getAttributes() as $attribute) {
             $decorator = $attribute->getInstance();
 
             if ($decorator instanceof ClassDecoratorInterface) {

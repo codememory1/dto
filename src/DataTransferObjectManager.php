@@ -29,7 +29,6 @@ readonly class DataTransferObjectManager implements DataTransferObjectManagerInt
     public function hydrate(string $dataTransferObjectClassName, array $data): object
     {
         $reflector = $this->reflectorManager->getReflector($dataTransferObjectClassName);
-
         $classExecutionContext = $this->classExecutionContextFactory->create($this, $reflector, $data);
 
         $this->classDecoratorProcessor->processDecorators($classExecutionContext, $data);
@@ -37,7 +36,7 @@ readonly class DataTransferObjectManager implements DataTransferObjectManagerInt
         $propertyExecutionContexts = $this->propertyDecoratorProcessor->processDecorators(
             $this->propertyGrouper->groupProperties($classExecutionContext),
             $classExecutionContext,
-            $data
+            $classExecutionContext->getData()
         );
 
         $args = [];

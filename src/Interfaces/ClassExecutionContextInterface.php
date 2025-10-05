@@ -2,6 +2,7 @@
 
 namespace Codememory\Dto\Interfaces;
 
+use Codememory\Reflection\Reflectors\AttributeReflector;
 use Codememory\Reflection\Reflectors\ClassReflector;
 
 interface ClassExecutionContextInterface
@@ -9,6 +10,16 @@ interface ClassExecutionContextInterface
     public function getManager(): DataTransferObjectManagerInterface;
 
     public function getReflector(): ClassReflector;
+
+    /**
+     * @return array<int, AttributeReflector>
+     */
+    public function getAttributes(): array;
+
+    /**
+     * @param array<int, AttributeReflector> $attributes
+     */
+    public function setAttributes(array $attributes): static;
 
     public function getData(): array;
 
